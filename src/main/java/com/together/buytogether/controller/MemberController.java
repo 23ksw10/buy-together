@@ -1,8 +1,10 @@
 package com.together.buytogether.controller;
 
+import com.together.buytogether.domain.Member;
 import com.together.buytogether.dto.MemberSignUpDto;
 import com.together.buytogether.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,12 @@ public class MemberController {
         this.memberService = memberService;
     }
     @PostMapping
-    public void signUp(@RequestBody MemberSignUpDto){
+    public void signUp(@RequestBody MemberSignUpDto signUpDto, BindingResult result){
+        if(result.hasErrors()){
+            throw new IllegalStateException("올바르지 않은 입력입니다");
+        }
+
+        Member member = new Member();
 
     }
 

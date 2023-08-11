@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb7cfd6c-3d21-41b5-9264-d65eee70feaa" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Address.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Member.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Address.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Member.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/repository/MemberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/repository/MemberRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/service/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/service/MemberService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,16 +40,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/kim-sun-wook/Documents/GitHub/buy-together/build.gradle",
-    "spring.configuration.checksum": "6a057e975e4c0f1114b9300b2fc78b88"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/kim-sun-wook/Documents/GitHub/buy-together/build.gradle&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;6a057e975e4c0f1114b9300b2fc78b88&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="BuyTogetherApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="buy-together.main" />
@@ -67,7 +68,8 @@
       <option name="presentableId" value="Default" />
       <updated>1688648754451</updated>
       <workItem from="1688648755718" duration="17000" />
-      <workItem from="1688732797746" duration="12722000" />
+      <workItem from="1688732797746" duration="14265000" />
+      <workItem from="1691566878623" duration="6228000" />
     </task>
     <servers />
   </component>
@@ -84,5 +86,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
