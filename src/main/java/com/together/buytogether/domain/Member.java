@@ -1,12 +1,12 @@
 package com.together.buytogether.domain;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @EqualsAndHashCode(of = "id")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -30,5 +30,13 @@ public class Member {
 
     private String sex;
 
+    @Builder
+    public Member(String name, String phoneNumber,String loginId, String password, String sex){
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.loginId = loginId;
+        this.password = password;
+        this.sex = sex;
+    }
 
 }

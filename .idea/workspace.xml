@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb7cfd6c-3d21-41b5-9264-d65eee70feaa" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Address.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/domain/Member.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/repository/MemberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/repository/MemberRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/dto/MemberSignUpDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/dto/MemberSignUpDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/together/buytogether/service/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/together/buytogether/service/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/together/buytogether/service/MemberServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/together/buytogether/service/MemberServiceTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +71,7 @@
       <updated>1688648754451</updated>
       <workItem from="1688648755718" duration="17000" />
       <workItem from="1688732797746" duration="14265000" />
-      <workItem from="1691566878623" duration="6228000" />
+      <workItem from="1691566878623" duration="10555000" />
     </task>
     <servers />
   </component>
@@ -92,7 +94,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/together/buytogether/controller/MemberController.java</url>
-          <line>30</line>
+          <line>36</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

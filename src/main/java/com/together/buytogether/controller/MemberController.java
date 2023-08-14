@@ -26,8 +26,14 @@ public class MemberController {
             throw new IllegalStateException("올바르지 않은 입력입니다");
         }
 
-        Member member = new Member();
-
+        Member member = Member.builder()
+                .name(signUpDto.getName())
+                .phoneNumber(signUpDto.getPhoneNumber())
+                .loginId(signUpDto.getSex())
+                .password(signUpDto.getPassword())
+                .sex(signUpDto.getSex())
+                .build();
+        memberService.createMember(member);
     }
 
 
