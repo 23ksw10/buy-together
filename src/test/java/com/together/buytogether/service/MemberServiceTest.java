@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +42,18 @@ public class MemberServiceTest {
         assertThrows(IllegalStateException.class, () -> memberService.createMember(member));
     }
 
+    @Test
+    @DisplayName("회원가입 성공")
+    public void signUpSuccess() {
+        given(memberRepository.findByLoginId(member.getLoginId()))
+                .willReturn(Optional.empty());
+        given(memberRepository.save(member))
+                .willReturn(member);
+
+        memberService.createMember(member);
+
+        then(memberRepository).should().save(fakeMember((1L)));
+    }
 
 
     private Member fakeMember(Long memberId){
