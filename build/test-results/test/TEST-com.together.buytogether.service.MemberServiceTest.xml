@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.together.buytogether.service.MemberServiceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-08-16T12:08:03" hostname="kim-sun-wook-MacBookPro.local" time="1.248">
-  <properties/>
-  <testcase name="회원가입 성공" classname="com.together.buytogether.service.MemberServiceTest" time="1.236"/>
-  <testcase name="loginId 중복 시 예외 발생" classname="com.together.buytogether.service.MemberServiceTest" time="0.01"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
