@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cb7cfd6c-3d21-41b5-9264-d65eee70feaa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/together/buytogether/service/MemberServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/together/buytogether/service/MemberServiceTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="cb7cfd6c-3d21-41b5-9264-d65eee70feaa" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,7 +45,7 @@
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/Users/kim-sun-wook/Documents/GitHub/buy-together/build.gradle",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "spring.configuration.checksum": "6a057e975e4c0f1114b9300b2fc78b88"
   }
 }]]></component>
@@ -165,7 +161,7 @@
       <updated>1688648754451</updated>
       <workItem from="1688648755718" duration="17000" />
       <workItem from="1688732797746" duration="14265000" />
-      <workItem from="1691566878623" duration="14222000" />
+      <workItem from="1691566878623" duration="14710000" />
     </task>
     <servers />
   </component>
