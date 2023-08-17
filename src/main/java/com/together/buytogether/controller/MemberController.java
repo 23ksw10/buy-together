@@ -36,6 +36,11 @@ public class MemberController {
         memberService.createMember(member);
     }
 
+    @PostMapping("/siginin")
+    public void signIn(){
+
+    }
+
 
 
 }
