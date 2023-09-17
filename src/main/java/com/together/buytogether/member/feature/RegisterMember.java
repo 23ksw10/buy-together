@@ -4,16 +4,24 @@ import com.together.buytogether.member.domain.Address;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SEX;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-class RegisterMember {
+@RestController
+public class RegisterMember {
     private final MemberRepository memberRepository;
 
     public RegisterMember(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    public void request(Request request) {
+    @PostMapping("/members")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void request(@RequestBody Request request) {
         // request에서 필요한 값들을 꺼내서 회원 도메인을 생성하고 저장한
         Member member = request.toDomain();
         memberRepository.save(member);

@@ -2,21 +2,30 @@ package com.together.buytogether.member.feature;
 
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SEX;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RegisterMemberTest {
-    private RegisterMember registerMember;
+    @LocalServerPort
+    private int port;
+    @Autowired
     private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        memberRepository = new MemberRepository();
-        registerMember = new RegisterMember(memberRepository);
+        if (RestAssured.UNDEFINED_PORT == RestAssured.port) {
+            RestAssured.port = port;
+        }
     }
 
     @Test
@@ -34,7 +43,14 @@ public class RegisterMemberTest {
                 detailAddress    //상세 주소
         );
         //when
-        registerMember.request(request);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         //then
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
