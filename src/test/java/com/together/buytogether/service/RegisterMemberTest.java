@@ -5,13 +5,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class RegisterMemberTest {
     private RegisterMember registerMember;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        registerMember = new RegisterMember();
+        memberRepository = new MemberRepository();
+        registerMember = new RegisterMember(memberRepository);
     }
 
     @Test
@@ -32,7 +41,7 @@ public class RegisterMemberTest {
         registerMember.request(request);
 
         //then
-//        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
     }
 
     public enum SEX {
@@ -63,6 +72,7 @@ public class RegisterMemberTest {
     }
 
     public static class Member {
+        private Long memberId;
         private final String name;
         private final String loginId;
         private final String password;
@@ -101,14 +111,41 @@ public class RegisterMemberTest {
             Assert.notNull(address, "주소는 필수 값입니다");
         }
 
+        public void assignId(Long memberId) {
+            this.memberId = memberId;
+        }
+
+        public Long getId() {
+            return memberId;
+        }
+    }
+
+    private static class MemberRepository {
+        private final Map<Long, Member> members = new HashMap<>();
+        private Long memberId = 0L;
+
+        public void save(Member member) {
+            member.assignId(memberId++);
+            members.put(member.getId(), member);
+        }
+
+        public List<Member> findAll() {
+            return new ArrayList<>(members.values());
+        }
     }
 
     private class RegisterMember {
+        private final MemberRepository memberRepository;
 
+
+        public RegisterMember(MemberRepository memberRepository) {
+            this.memberRepository = memberRepository;
+        }
 
         public void request(Request request) {
             // request에서 필요한 값들을 꺼내서 회원 도메인을 생성하고 저장한
             Member member = request.toDomain();
+            memberRepository.save(member);
         }
 
         public record Request(
