@@ -1,4 +1,4 @@
-package com.together.buytogether.member.feature;
+package com.together.buytogether.member.domain;
 
 import org.springframework.util.Assert;
 

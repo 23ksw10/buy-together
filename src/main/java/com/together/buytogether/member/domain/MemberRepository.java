@@ -1,4 +1,4 @@
-package com.together.buytogether.member.feature;
+package com.together.buytogether.member.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

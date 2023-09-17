@@ -1,5 +1,7 @@
 package com.together.buytogether.member.feature;
 
+import com.together.buytogether.member.domain.MemberRepository;
+import com.together.buytogether.member.domain.SEX;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

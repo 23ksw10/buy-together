@@ -1,4 +1,4 @@
-package com.together.buytogether.member.feature;
+package com.together.buytogether.member.domain;
 
 public enum SEX {
     MALE("남자"),

@@ -1,5 +1,9 @@
 package com.together.buytogether.member.feature;
 
+import com.together.buytogether.member.domain.Address;
+import com.together.buytogether.member.domain.Member;
+import com.together.buytogether.member.domain.MemberRepository;
+import com.together.buytogether.member.domain.SEX;
 import org.springframework.util.Assert;
 
 class RegisterMember {
