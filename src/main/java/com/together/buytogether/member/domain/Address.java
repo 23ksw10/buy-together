@@ -1,10 +1,20 @@
 package com.together.buytogether.member.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+@Embeddable
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Address {
-    private final String address;
-    private final String detailAddress;
+    @Column(name = "address", nullable = false)
+    @Comment("도로명 주소")
+    private String address;
+    @Column(name = "detail_address", nullable = false)
+    @Comment("상세 주소")
+    private String detailAddress;
 
     public Address(String address, String detailAddress) {
         validateAddress(address, detailAddress);

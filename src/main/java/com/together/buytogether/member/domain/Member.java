@@ -1,15 +1,41 @@
 package com.together.buytogether.member.domain;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+@Getter
+@Entity
+@Table(name = "member")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Comment("회원")
 public class Member {
-    private final String name;
-    private final String loginId;
-    private final String password;
-    private final String phoneNumber;
-    private final SEX sex;
-    private final Address address;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    @Comment("회원 아이디")
     private Long memberId;
+    @Column(name = "name", nullable = false)
+    @Comment("이름")
+    private String name;
+    @Column(name = "login_id", nullable = false, unique = true)
+    @Comment("로그인 아이디")
+    private String loginId;
+    @Column(name = "password", nullable = false)
+    @Comment("비밀번호")
+    private String password;
+    @Column(name = "phone_number", nullable = false)
+    @Comment("전화번호")
+    private String phoneNumber;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sex", nullable = false)
+    @Comment("성별")
+    private SEX sex;
+    @Embedded
+    private Address address;
 
     public Member(
             String name,
@@ -42,11 +68,4 @@ public class Member {
         Assert.notNull(address, "주소는 필수 값입니다");
     }
 
-    public void assignId(Long memberId) {
-        this.memberId = memberId;
-    }
-
-    public Long getId() {
-        return memberId;
-    }
 }
