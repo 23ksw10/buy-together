@@ -25,9 +25,20 @@ public class RegisterMember {
     @PostMapping("/members")
     @ResponseStatus(HttpStatus.CREATED)
     public void request(@RequestBody @Valid Request request) {
-        // request에서 필요한 값들을 꺼내서 회원 도메인을 생성하고 저장한
+        // request에서 필요한 값들을 꺼내서 회원 도메인을 생성하고 저장한다
+        // 중복 검사도
+        validateDuplicateMember(request.loginId);
         Member member = request.toDomain();
         memberRepository.save(member);
+    }
+
+    private void validateDuplicateMember(String logingId) {
+        memberRepository.findAll().stream()
+                .filter(member -> member.getLoginId().equals(logingId))
+                .findFirst()
+                .ifPresent(member -> {
+                    throw new IllegalArgumentException("이미 존재하는 회원입니다");
+                });
     }
 
     public record Request(
