@@ -1,9 +1,6 @@
 package com.together.buytogether.member.feature;
 
-import com.together.buytogether.member.domain.Address;
-import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.member.domain.MemberRepository;
-import com.together.buytogether.member.domain.SEX;
+import com.together.buytogether.member.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SignInMemberTest {
     private final String loginId = "loginId";
     private final String password = "password";
-    private final String sessionId = "sessionId";
     private SignInMember signInMember;
     private MemberRepository memberRepository;
     private MockHttpSession httpSession;
@@ -49,7 +45,7 @@ public class SignInMemberTest {
         signInMember.request(loginId, password);
 
         //then
-        assertThat(httpSession.getAttribute(sessionId)).isEqualTo(1L);
+        assertThat(httpSession.getAttribute(SessionConst.LOGIN_MEMBER)).isEqualTo(1L);
     }
 
     private class SignInMember {
@@ -58,7 +54,8 @@ public class SignInMemberTest {
                     .filter(m -> m.getPassword().equals(password))
                     .findFirst()
                     .orElseThrow(null);
-            httpSession.setAttribute("sessionId", 1L);
+            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
         }
     }
+
 }
