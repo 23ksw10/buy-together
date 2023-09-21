@@ -50,11 +50,15 @@ public class SignInMemberTest {
 
     private class SignInMember {
         public void request(String loginId, String password) {
-            Member logInMember = memberRepository.findByLoginId(loginId).stream()
+            Member logInMember = getLogInMember(loginId, password);
+            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
+        }
+
+        private Member getLogInMember(String loginId, String password) {
+            return memberRepository.findByLoginId(loginId).stream()
                     .filter(m -> m.getPassword().equals(password))
                     .findFirst()
                     .orElseThrow(null);
-            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
         }
     }
 
