@@ -1,5 +1,6 @@
 package com.together.buytogether.member.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -51,6 +52,18 @@ public class Member {
         this.phoneNumber = phoneNumber;
         this.sex = sex;
         this.address = address;
+    }
+
+    @VisibleForTesting
+    Member(Long memberId,
+           String name,
+           String loginId,
+           String password,
+           String phoneNumber,
+           SEX sex,
+           Address address) {
+        this(name, loginId, password, phoneNumber, sex, address);
+        this.memberId = memberId;
     }
 
     private void validateMember(

@@ -1,6 +1,8 @@
 package com.together.buytogether.member.feature;
 
-import com.together.buytogether.member.domain.*;
+import com.together.buytogether.member.domain.Member;
+import com.together.buytogether.member.domain.MemberRepository;
+import com.together.buytogether.member.domain.SessionConst;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +11,11 @@ import org.springframework.mock.web.MockHttpSession;
 
 import java.util.Optional;
 
+import static com.together.buytogether.member.domain.MemberFixture.aMember;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SignInMemberTest {
-    private final String loginId = "loginId";
-    private final String password = "password";
+
     private SignInMember signInMember;
     private MemberRepository memberRepository;
     private MockHttpSession httpSession;
@@ -29,15 +31,9 @@ public class SignInMemberTest {
     @DisplayName("로그인 성공")
     void signUpMember() {
         //given
-
-        Member member = new Member(
-                "name",
-                "loginId",
-                "password",
-                "phoneNumber",
-                SEX.MALE,
-                new Address("address", "detailAddress")
-        );
+        final String loginId = "loginId";
+        final String password = "password";
+        Member member = aMember().build();
         Mockito.when(memberRepository.findByLoginId(loginId))
                 .thenReturn(Optional.of(member));
 
@@ -51,7 +47,7 @@ public class SignInMemberTest {
     private class SignInMember {
         public void request(String loginId, String password) {
             Member logInMember = getLogInMember(loginId, password);
-            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
+            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
         }
 
         private Member getLogInMember(String loginId, String password) {
