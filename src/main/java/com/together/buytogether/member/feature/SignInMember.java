@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-class SignInMember {
+public class SignInMember {
     @Autowired
     private MemberRepository memberRepository;
 
