@@ -1,61 +1,48 @@
 package com.together.buytogether.member.feature;
 
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
-import com.together.buytogether.member.domain.SessionConst;
-import org.junit.jupiter.api.BeforeEach;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
-import java.util.Optional;
-
-import static com.together.buytogether.member.domain.MemberFixture.aMember;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SignInMemberTest {
+public class SignInMemberTest extends ApiTest {
 
-    private SignInMember signInMember;
+    @Autowired
     private MemberRepository memberRepository;
-    private MockHttpSession httpSession;
 
-    @BeforeEach
-    void setUp() {
-        memberRepository = Mockito.mock(MemberRepository.class);
-        signInMember = new SignInMember();
-        httpSession = new MockHttpSession();
-    }
 
     @Test
     @DisplayName("로그인 성공")
     void signUpMember() {
         //given
-        final String loginId = "loginId";
-        final String password = "password";
-        Member member = aMember().build();
-        Mockito.when(memberRepository.findByLoginId(loginId))
-                .thenReturn(Optional.of(member));
+        Scenario.registerMember().request();
+        SignInMember.Request request = new SignInMember.Request(
+                "loginId",
+                "password");
 
         //when
-        signInMember.request(loginId, password);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/members/sign-in")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
-        //then
-        assertThat(httpSession.getAttribute(SessionConst.LOGIN_MEMBER)).isEqualTo(1L);
-    }
+        Member member = memberRepository.findByLoginId("loginId").stream()
+                .filter(m -> m.getPassword().equals("password"))
+                .findFirst()
+                .orElseThrow(null);
+        assertThat(member.getPassword()).isEqualTo("password");
 
-    private class SignInMember {
-        public void request(String loginId, String password) {
-            Member logInMember = getLogInMember(loginId, password);
-            httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
-        }
-
-        private Member getLogInMember(String loginId, String password) {
-            return memberRepository.findByLoginId(loginId).stream()
-                    .filter(m -> m.getPassword().equals(password))
-                    .findFirst()
-                    .orElseThrow(null);
-        }
     }
 
 }
