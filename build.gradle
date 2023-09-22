@@ -28,6 +28,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	//API 테스트 라이브러리
 	implementation 'io.rest-assured:rest-assured:5.3.1'
+	// VisibleForTesting 용
+	implementation 'com.google.guava:guava:32.1.1-jre'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
