@@ -2,8 +2,9 @@ package com.together.buytogether.member.feature;
 
 import com.together.buytogether.common.ApiTest;
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
+import com.together.buytogether.member.domain.SessionConst;
+import com.together.buytogether.member.domain.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class SignInMemberTest extends ApiTest {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private SessionManager sessionManager;
 
 
     @Test
@@ -21,11 +24,7 @@ public class SignInMemberTest extends ApiTest {
     void signUpMember() {
         Scenario.registerMember().request().signInMember().request();
 
-        Member member = memberRepository.findByLoginId("loginId").stream()
-                .filter(m -> m.getPassword().equals("password"))
-                .findFirst()
-                .orElseThrow(null);
-        assertThat(member.getPassword()).isEqualTo("password");
+        assertThat(sessionManager.getAllSessions().get(0).getAttribute(SessionConst.LOGIN_MEMBER)).isEqualTo(1L);
 
     }
 
