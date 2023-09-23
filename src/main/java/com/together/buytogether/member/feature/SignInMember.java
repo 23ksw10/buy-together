@@ -3,22 +3,25 @@ package com.together.buytogether.member.feature;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SessionConst;
+import com.together.buytogether.member.domain.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 public class SignInMember {
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final SessionManager sessionManager;
+
+    public SignInMember(MemberRepository memberRepository, SessionManager sessionManager) {
+        this.memberRepository = memberRepository;
+        this.sessionManager = sessionManager;
+    }
 
 
     @PostMapping("/members/sign-in")
@@ -26,6 +29,8 @@ public class SignInMember {
         Member logInMember = getLogInMember(request.loginId, request.password);
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
+        String sessionId = httpSession.getId();
+        sessionManager.createSession(sessionId, httpSession);
     }
 
     private Member getLogInMember(String loginId, String password) {
