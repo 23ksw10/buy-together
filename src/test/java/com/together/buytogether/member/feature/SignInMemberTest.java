@@ -2,7 +2,6 @@ package com.together.buytogether.member.feature;
 
 import com.together.buytogether.common.ApiTest;
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.member.domain.SessionManager;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SignInMemberTest extends ApiTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
     @Autowired
     private SessionManager sessionManager;
 
