@@ -21,4 +21,8 @@ public class SessionManager {
         sessionStore.forEach((key, value) -> sessions.add(value));
         return sessions;
     }
+
+    public void invalidateSession(String sessionId) {
+        sessionStore.remove(sessionId);
+    }
 }
