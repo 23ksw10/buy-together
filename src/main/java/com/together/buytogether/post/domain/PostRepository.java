@@ -1,11 +1,14 @@
-package com.together.buytogether.post.feature;
+package com.together.buytogether.post.domain;
+
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class PostRepository {
+@Component
+public class PostRepository {
     private final Map<Long, Post> posts = new HashMap<>();
     private Long id = 1L;
 

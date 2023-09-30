@@ -25,4 +25,8 @@ public class SessionManager {
     public void invalidateSession(String sessionId) {
         sessionStore.remove(sessionId);
     }
+
+    public HttpSession getSession(String sessionId) {
+        return sessionStore.get(sessionId);
+    }
 }
