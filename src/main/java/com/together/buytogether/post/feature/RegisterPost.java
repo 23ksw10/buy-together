@@ -8,8 +8,10 @@ import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,7 +37,7 @@ public class RegisterPost {
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public void requet(@RequestBody Request request,
+    public void requet(@RequestBody @Valid Request request,
                        HttpServletRequest httpServletRequest) {
         Cookie cookie = httpServletRequest.getCookies()[0];
         Long memberId = (Long) sessionManger.getSession(cookie.getName()).getAttribute(SessionConst.LOGIN_MEMBER);
@@ -46,14 +48,12 @@ public class RegisterPost {
     }
 
     public record Request(
+            @NotBlank(message = "글 제목은 필수입니다")
             String title,
+            @NotBlank(message = "글 내용은 필수입니다")
             String content,
+            @NotNull(message = "글 만료일은 필수입니다")
             LocalDateTime expiredAt) {
-        public Request {
-            Assert.hasText(title, "글 제목은 필수입니다");
-            Assert.hasText(content, "글 내용은 필수입니다");
-            Assert.notNull(expiredAt, "글 만료일은 필수입니다");
-        }
 
 
         public Post toDomain(Member member) {
