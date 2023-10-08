@@ -1,16 +1,44 @@
 package com.together.buytogether.post.domain;
 
 import com.together.buytogether.member.domain.Member;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "post")
+@Component("포스트")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
-    private final Member member;
-    private final String title;
-    private final String content;
-    private final LocalDateTime expiredAt;
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
+    @Comment("포스트 아이디")
+    @Getter
+    private Long postId;
+
+    @Comment("회원")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Column(name = "title", nullable = false)
+    @Comment("글 제목")
+    private String title;
+
+    @Column(name = "content", nullable = false)
+    @Comment("글 내용")
+    private String content;
+
+    @Column(name = "expired_at", nullable = false)
+    @Comment("글 만료일")
+    private LocalDateTime expiredAt;
 
     public Post(
             Member member,
@@ -27,8 +55,6 @@ public class Post {
         this.title = title;
         this.content = content;
         this.expiredAt = expiredAt;
-
-
     }
 
     private static void validateConstructor(
@@ -42,11 +68,5 @@ public class Post {
         Assert.notNull(expiredAt, "글 만료일은 필수입니다");
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void assignId(Long id) {
-        this.id = id;
-    }
 }
