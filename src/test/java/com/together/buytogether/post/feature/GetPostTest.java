@@ -28,4 +28,36 @@ public class GetPostTest extends ApiTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("게시글 아이디로 게시글 조회")
+    void getPostWithPostId() {
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+
+        RestAssured.given().log().all()
+                .when()
+                .get("/posts/1")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("잘못된 게시글 아이디로 게시글 조회")
+    void getPostWithWrongPostId() {
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+
+        RestAssured.given().log().all()
+                .when()
+                .get("/posts/5")
+                .then().log().all()
+                .statusCode(500);
+    }
 }
