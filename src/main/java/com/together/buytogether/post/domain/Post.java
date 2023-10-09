@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-
+@Getter
 @Entity
 @Table(name = "post")
 @Component("포스트")
@@ -23,7 +23,7 @@ public class Post {
     @Getter
     private Long postId;
 
-    @Comment("회원")
+    @Comment("회원 ID")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
