@@ -69,4 +69,9 @@ public class Post {
     }
 
 
+    public void checkOwner(Long memberId) {
+        if (!memberId.equals(this.member.getMemberId())) {
+            throw new IllegalArgumentException("작성자가 아닙니다");
+        }
+    }
 }
