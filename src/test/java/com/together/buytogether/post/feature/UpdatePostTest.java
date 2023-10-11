@@ -39,7 +39,11 @@ public class UpdatePostTest {
         public void request(Long memberId, Long postId, Request request) {
             Post post = postRepository.getByPostId(postId);
             post.checkOwner(memberId);
-
+            post.update(
+                    request.title,
+                    request.content,
+                    request.expiredAt
+            );
         }
 
         public record Request(

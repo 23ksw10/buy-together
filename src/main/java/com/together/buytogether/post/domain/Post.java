@@ -74,4 +74,20 @@ public class Post {
             throw new IllegalArgumentException("작성자가 아닙니다");
         }
     }
+
+    private static void validateUpdate(String title, String content, LocalDateTime expiredAt) {
+        Assert.hasText(title, "글 제목은 필수입니다");
+        Assert.hasText(content, "글 내용은 필수입니다");
+        Assert.notNull(expiredAt, "글 만료일은 필수입니다");
+    }
+
+    public void update(
+            String title,
+            String content,
+            LocalDateTime expiredAt) {
+        validateUpdate(title, content, expiredAt);
+        this.title = title;
+        this.content = content;
+        this.expiredAt = expiredAt;
+    }
 }
