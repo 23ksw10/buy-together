@@ -1,6 +1,7 @@
 package com.together.buytogether.post.feature;
 
 import com.together.buytogether.member.domain.MemberRepository;
+import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ public class UpdatePostTest {
         PostRepository postRepository;
 
         public void request(Long memberId, Long postId, Request request) {
+            Post post = postRepository.getByPostId(postId);
 
         }
 
