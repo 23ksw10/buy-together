@@ -3,6 +3,7 @@ package com.together.buytogether.post.feature;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.post.domain.PostStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,7 @@ class UpdatePost {
         post.update(
                 request.title,
                 request.content,
+                request.status,
                 request.expiredAt
         );
     }
@@ -40,6 +42,9 @@ class UpdatePost {
             String title,
             @NotBlank(message = "글 내용은 필수입니다")
             String content,
+
+            @NotNull(message = "글 상태는 필수입니다")
+            PostStatus status,
             @NotNull(message = "글 만료일은 필수입니다")
             LocalDateTime expiredAt) {
 

@@ -1,6 +1,7 @@
 package com.together.buytogether.post.feature.api;
 
 import com.together.buytogether.common.Scenario;
+import com.together.buytogether.post.domain.PostStatus;
 import com.together.buytogether.post.feature.UpdatePost;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,10 @@ public class UpdatePostApi {
     private Long postId = 1L;
     private String newTitle = "newTitle";
     private String newContent = "newContent";
+
+    private PostStatus status = PostStatus.OPEN;
+
+    private LocalDateTime expiredAt = LocalDateTime.now().plusDays(2);
     private String sessionId = "";
 
     public UpdatePostApi postId(Long postId) {
@@ -28,6 +33,16 @@ public class UpdatePostApi {
         return this;
     }
 
+    public UpdatePostApi status(PostStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    public UpdatePostApi expiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
+        return this;
+    }
+
     public UpdatePostApi sessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
@@ -37,7 +52,8 @@ public class UpdatePostApi {
         UpdatePost.Request request = new UpdatePost.Request(
                 newTitle,
                 newContent,
-                LocalDateTime.now().plusDays(2)
+                PostStatus.OPEN,
+                expiredAt
         );
 
         RestAssured.given().log().all()

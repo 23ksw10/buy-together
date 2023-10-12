@@ -8,6 +8,8 @@ public class PostFixture {
     private final MemberFixture memberFixture = MemberFixture.aMember();
     private String title = "title";
     private String content = "content";
+
+    private PostStatus status = PostStatus.OPEN;
     private LocalDateTime expiredAt = LocalDateTime.now().plusDays(1);
 
     public static PostFixture aPost() {
@@ -24,6 +26,11 @@ public class PostFixture {
         return this;
     }
 
+    public PostFixture status(PostStatus status) {
+        this.status = status;
+        return this;
+    }
+
     public PostFixture expiredAt(LocalDateTime expiredAt) {
         this.expiredAt = expiredAt;
         return this;
@@ -34,6 +41,7 @@ public class PostFixture {
                 memberFixture.build(),
                 title,
                 content,
+                status,
                 expiredAt
         );
     }
