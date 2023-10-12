@@ -1,45 +1,37 @@
 package com.together.buytogether.post.feature;
 
-import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostFixture;
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
+import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.post.domain.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UpdatePostTest {
-    UpdatePost updatePost;
-    PostRepository postRepository;
+public class UpdatePostTest extends ApiTest {
 
-    @BeforeEach
-    void setUp() {
-        postRepository = Mockito.mock(PostRepository.class);
-        updatePost = new UpdatePost(postRepository);
-    }
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private SessionManager sessionManager;
+
 
     @Test
     @DisplayName("게시글 수정")
     void updatePost() {
-        Post post = PostFixture.aPost().build();
-        Mockito.when(postRepository.getByPostId(Mockito.anyLong())).thenReturn(post);
-        Long memberId = 1L;
-        Long postId = 1L;
-        String newTitle = "newTitle";
-        String newContent = "newContent";
-        UpdatePost.Request request = new UpdatePost.Request(
-                newTitle,
-                newContent,
-                LocalDateTime.now().plusDays(2)
-        );
-        updatePost.request(memberId, postId, request);
 
-        assertThat(post.getTitle()).isEqualTo(newTitle);
-        assertThat(post.getContent()).isEqualTo(newContent);
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
+                .updatePost().sessionId(sessionManager.getAllSessions().get(0).getId()).request();
+
+
+        assertThat(postRepository.findAll()).hasSize(1);
+        assertThat(postRepository.getByPostId(1L).getTitle()).isEqualTo("newTitle");
+        assertThat(postRepository.getByPostId(1L).getContent()).isEqualTo("newContent");
 
     }
 

@@ -4,6 +4,7 @@ import com.together.buytogether.member.feature.api.RegisterMemberApi;
 import com.together.buytogether.member.feature.api.SignInMemberApi;
 import com.together.buytogether.member.feature.api.SignOutMemberApi;
 import com.together.buytogether.post.feature.api.RegisterPostApi;
+import com.together.buytogether.post.feature.api.UpdatePostApi;
 
 public class Scenario {
     public static RegisterMemberApi registerMember() {
@@ -20,5 +21,9 @@ public class Scenario {
 
     public RegisterPostApi registerPost() {
         return new RegisterPostApi();
+    }
+
+    public UpdatePostApi updatePost() {
+        return new UpdatePostApi();
     }
 }

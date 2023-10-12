@@ -1,14 +1,18 @@
 package com.together.buytogether.post.feature;
 
+import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
 import jakarta.validation.Valid;
-import org.springframework.util.Assert;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
 @RestController
+public
 class UpdatePost {
     PostRepository postRepository;
 
@@ -17,10 +21,12 @@ class UpdatePost {
     }
 
     @PutMapping("/posts/{postId}/update")
-    public void request(@CookieValue("JSESSIONID") Long memberId,
+    @Transactional
+    public void request(@SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
                         @PathVariable Long postId,
                         @Valid @RequestBody Request request) {
         Post post = postRepository.getByPostId(postId);
+        System.out.println(memberId);
         post.checkOwner(memberId);
         post.update(
                 request.title,
@@ -30,13 +36,12 @@ class UpdatePost {
     }
 
     public record Request(
+            @NotBlank(message = "글 제목은 필수입니다")
             String title,
+            @NotBlank(message = "글 내용은 필수입니다")
             String content,
+            @NotNull(message = "글 만료일은 필수입니다")
             LocalDateTime expiredAt) {
-        public Request {
-            Assert.hasText(title, "글 제목은 필수입니다");
-            Assert.hasText(content, "글 내용은 필수입니다");
-            Assert.notNull(expiredAt, "글 만료일은 필수입니다");
-        }
+
     }
 }
