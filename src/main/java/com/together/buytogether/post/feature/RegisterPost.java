@@ -38,8 +38,8 @@ public class RegisterPost {
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public void requet(@RequestBody @Valid Request request,
-                       HttpServletRequest httpServletRequest) {
+    public void request(@RequestBody @Valid Request request,
+                        HttpServletRequest httpServletRequest) {
         Cookie cookie = httpServletRequest.getCookies()[0];
         Long memberId = (Long) sessionManger.getSession(cookie.getName()).getAttribute(SessionConst.LOGIN_MEMBER);
         Member member = memberRepository.findById(memberId).orElseThrow(
