@@ -85,19 +85,28 @@ public class Post {
         }
     }
 
-    private static void validateUpdate(String title, String content, LocalDateTime expiredAt) {
+    private void validateUpdate(String title, String content, PostStatus status, LocalDateTime expiredAt) {
+        validateStatusWhenUpdate();
         Assert.hasText(title, "글 제목은 필수입니다");
         Assert.hasText(content, "글 내용은 필수입니다");
         Assert.notNull(expiredAt, "글 만료일은 필수입니다");
     }
 
+    private void validateStatusWhenUpdate() {
+        if (status == PostStatus.CLOSED) {
+            throw new IllegalStateException("종료된 게시글은 수정할 수 없습니다");
+        }
+    }
+
     public void update(
             String title,
             String content,
+            PostStatus status,
             LocalDateTime expiredAt) {
-        validateUpdate(title, content, expiredAt);
+        validateUpdate(title, content, status, expiredAt);
         this.title = title;
         this.content = content;
+        this.status = status;
         this.expiredAt = expiredAt;
     }
 }
