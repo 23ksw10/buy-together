@@ -36,6 +36,11 @@ public class Post {
     @Comment("글 내용")
     private String content;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Comment("글 상태")
+    private PostStatus status;
+
     @Column(name = "expired_at", nullable = false)
     @Comment("글 만료일")
     private LocalDateTime expiredAt;
@@ -44,16 +49,19 @@ public class Post {
             Member member,
             String title,
             String content,
+            PostStatus status,
             LocalDateTime expiredAt) {
         validateConstructor(
                 member,
                 title,
                 content,
+                status,
                 expiredAt);
 
         this.member = member;
         this.title = title;
         this.content = content;
+        this.status = status;
         this.expiredAt = expiredAt;
     }
 
@@ -61,10 +69,12 @@ public class Post {
             Member member,
             String title,
             String content,
+            PostStatus status,
             LocalDateTime expiredAt) {
         Assert.notNull(member, "회원 정보는 필수입니다");
         Assert.hasText(title, "글 제목은 필수입니다");
         Assert.hasText(content, "글 내용은 필수입니다");
+        Assert.notNull(status, "글 상태는 필수입니다");
         Assert.notNull(expiredAt, "글 만료일은 필수입니다");
     }
 
