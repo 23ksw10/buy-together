@@ -1,47 +1,42 @@
 package com.together.buytogether.post.feature;
 
-import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostFixture;
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
+import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.post.domain.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DeletePostTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class DeletePostTest extends ApiTest {
+    @Autowired
     DeletePost deletePost;
+    @Autowired
     PostRepository postRepository;
-
-    @BeforeEach
-    void setUp() {
-        postRepository = Mockito.mock(PostRepository.class);
-        deletePost = new DeletePost(postRepository);
-    }
+    @Autowired
+    SessionManager sessionManager;
 
     @Test
     @DisplayName("게시글 삭제")
+    @Transactional
     void deletePost() {
-        Post post = PostFixture.aPost().build();
-        Mockito.when(postRepository.getByPostId(1L))
-                .thenReturn(post);
         Long postId = 1L;
-        Long memberId = 1L;
-        deletePost.request(memberId, postId);
-        Mockito.verify(postRepository, Mockito.times(1)).delete(post);
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+
+        RestAssured.given().log().all()
+                .when()
+                .cookie("JSESSIONID", sessionManager.getAllSessions().get(0).getId())
+                .delete("/posts/{postId}", postId)
+                .then().log().all()
+                .statusCode(200);
+        assertThat(postRepository.findAll()).hasSize(0);
+
     }
 
-    private class DeletePost {
-
-        PostRepository postRepository;
-
-        public DeletePost(PostRepository postRepository) {
-            this.postRepository = postRepository;
-        }
-
-        public void request(Long memberId, Long postId) {
-            Post post = postRepository.getByPostId(postId);
-            post.checkOwner(memberId);
-            postRepository.delete(post);
-        }
-    }
 }
