@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-public
-class UpdatePost {
+public class UpdatePost {
     PostRepository postRepository;
 
     public UpdatePost(PostRepository postRepository) {
