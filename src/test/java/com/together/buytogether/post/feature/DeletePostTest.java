@@ -23,8 +23,8 @@ public class DeletePostTest extends ApiTest {
     void deletePost() {
         Scenario.registerMember().request()
                 .signInMember().request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .deletePost().sessionId(sessionManager.getAllSessions().get(0).getId()).request();
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .deletePost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
         assertThat(postRepository.findAll()).hasSize(0);
 
     }

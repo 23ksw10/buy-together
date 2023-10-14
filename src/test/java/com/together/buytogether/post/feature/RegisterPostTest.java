@@ -22,7 +22,7 @@ public class RegisterPostTest extends ApiTest {
     void registerPost() {
         Scenario.registerMember().request()
                 .signInMember().request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
 
         assertThat(postRepository.findAll()).hasSize(1);
 
