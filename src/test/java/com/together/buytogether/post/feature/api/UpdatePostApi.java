@@ -16,7 +16,7 @@ public class UpdatePostApi {
     private PostStatus status = PostStatus.OPEN;
 
     private LocalDateTime expiredAt = LocalDateTime.now().plusDays(2);
-    private String sessionId = "";
+    private String cookieValue = "";
 
     public UpdatePostApi postId(Long postId) {
         this.postId = postId;
@@ -43,8 +43,8 @@ public class UpdatePostApi {
         return this;
     }
 
-    public UpdatePostApi sessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public UpdatePostApi cookieValue(String cookieValue) {
+        this.cookieValue = cookieValue;
         return this;
     }
 
@@ -59,7 +59,7 @@ public class UpdatePostApi {
         RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(request)
-                .cookie("JSESSIONID", sessionId)
+                .cookie("JSESSIONID", cookieValue)
                 .when().put("/posts/{postId}/update", postId)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
