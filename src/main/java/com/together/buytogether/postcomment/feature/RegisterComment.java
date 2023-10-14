@@ -1,12 +1,12 @@
-package com.together.buytogether.comment.feature;
+package com.together.buytogether.postcomment.feature;
 
-import com.together.buytogether.comment.domain.CommentRepository;
-import com.together.buytogether.comment.domain.PostComment;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.postcomment.domain.CommentRepository;
+import com.together.buytogether.postcomment.domain.PostComment;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

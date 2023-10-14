@@ -1,4 +1,4 @@
-package com.together.buytogether.comment.domain;
+package com.together.buytogether.postcomment.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

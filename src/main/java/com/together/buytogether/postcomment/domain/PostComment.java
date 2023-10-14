@@ -1,4 +1,4 @@
-package com.together.buytogether.comment.domain;
+package com.together.buytogether.postcomment.domain;
 
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
