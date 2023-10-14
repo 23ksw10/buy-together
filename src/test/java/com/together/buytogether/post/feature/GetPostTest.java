@@ -18,9 +18,9 @@ public class GetPostTest extends ApiTest {
     void getPosts() {
         Scenario.registerMember().request()
                 .signInMember().request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
 
         RestAssured.given().log().all()
                 .when()
@@ -34,9 +34,9 @@ public class GetPostTest extends ApiTest {
     void getPostWithPostId() {
         Scenario.registerMember().request()
                 .signInMember().request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
 
         RestAssured.given().log().all()
                 .when()
@@ -50,9 +50,9 @@ public class GetPostTest extends ApiTest {
     void getPostWithWrongPostId() {
         Scenario.registerMember().request()
                 .signInMember().request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request()
-                .registerPost().cookieName(sessionManager.getAllSessions().get(0).getId()).request();
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
 
         RestAssured.given().log().all()
                 .when()

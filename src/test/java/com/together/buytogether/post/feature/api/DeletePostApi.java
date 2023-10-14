@@ -5,22 +5,22 @@ import io.restassured.RestAssured;
 
 public class DeletePostApi {
     private Long postId = 1L;
-    private String sessionId = "sessionId";
+    private String cookieValue = "sessionId";
 
     public DeletePostApi postId(Long postId) {
         this.postId = postId;
         return this;
     }
 
-    public DeletePostApi sessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public DeletePostApi cookieValue(String cookieValue) {
+        this.cookieValue = cookieValue;
         return this;
     }
 
     public Scenario request() {
         RestAssured.given().log().all()
                 .when()
-                .cookie("JSESSIONID", sessionId)
+                .cookie("JSESSIONID", cookieValue)
                 .delete("/posts/{postId}", postId)
                 .then().log().all()
                 .statusCode(200);

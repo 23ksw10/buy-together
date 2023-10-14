@@ -15,7 +15,7 @@ public class RegisterPostApi {
     private PostStatus status = PostStatus.OPEN;
     private LocalDateTime expiredAt = LocalDateTime.now().plusHours(10);
 
-    private String cookieName;
+    private String cookieValue;
 
     public RegisterPostApi title(String title) {
         this.title = title;
@@ -37,8 +37,8 @@ public class RegisterPostApi {
         return this;
     }
 
-    public RegisterPostApi cookieName(String cookieName) {
-        this.cookieName = cookieName;
+    public RegisterPostApi cookieValue(String cookieValue) {
+        this.cookieValue = cookieValue;
         return this;
     }
 
@@ -51,7 +51,7 @@ public class RegisterPostApi {
                 expiredAt
         );
         RestAssured.given().log().all()
-                .cookie(cookieName)
+                .cookie(cookieValue)
                 .contentType("application/json")
                 .body(request)
                 .when()
