@@ -31,34 +31,34 @@ public class PostComment {
     @Column(name = "content", nullable = false)
     @Comment("댓글 내용")
     private String content;
-    @Column(name = "create_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     @Comment("댓글 생성일")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     @Column(name = "update_at", nullable = false)
     @Comment("댓글 수정일")
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     public PostComment(
             Member member,
             Post post,
             String content,
-            LocalDateTime createAt,
-            LocalDateTime updateAt) {
-        validateConstructor(member, post, content, createAt, updateAt);
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        validateConstructor(member, post, content, createdAt, updatedAt);
         this.member = member;
         this.post = post;
         this.content = content;
-        this.createAt = createAt;
-        this.updateAt = updateAt;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    private static void validateConstructor(Member member, Post post, String content, LocalDateTime createAt, LocalDateTime updateAt) {
+    private static void validateConstructor(Member member, Post post, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
         Assert.notNull(member, "댓글 작성자는 필수입니다.");
         Assert.notNull(post, "댓글이 달린 게시글은 필수입니다.");
         Assert.hasText(content, "댓글 내용은 필수입니다.");
-        Assert.notNull(createAt, "댓글 생성일은 필수입니다.");
-        Assert.notNull(updateAt, "댓글 수정일은 필수입니다.");
-        if (createAt.isAfter(updateAt)) {
+        Assert.notNull(createdAt, "댓글 생성일은 필수입니다.");
+        Assert.notNull(updatedAt, "댓글 수정일은 필수입니다.");
+        if (createdAt.isAfter(updatedAt)) {
             throw new IllegalArgumentException("댓글 생성일은 수정일보다 빠를 수 없습니다.");
         }
     }

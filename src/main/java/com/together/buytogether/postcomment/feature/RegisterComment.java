@@ -5,8 +5,8 @@ import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
-import com.together.buytogether.postcomment.domain.CommentRepository;
 import com.together.buytogether.postcomment.domain.PostComment;
+import com.together.buytogether.postcomment.domain.PostCommentRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,15 +19,15 @@ import java.time.LocalDateTime;
 public class RegisterComment {
     MemberRepository memberRepository;
     PostRepository postRepository;
-    CommentRepository commentRepository;
+    PostCommentRepository postCommentRepository;
 
     public RegisterComment(
             MemberRepository memberRepository,
             PostRepository postRepository,
-            CommentRepository commentRepository) {
+            PostCommentRepository postCommentRepository) {
         this.memberRepository = memberRepository;
         this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
+        this.postCommentRepository = postCommentRepository;
     }
 
     @PostMapping("/posts/{postId}/comments")
@@ -39,7 +39,7 @@ public class RegisterComment {
         Member member = memberRepository.getByMemberId(memberId);
         Post post = postRepository.getByPostId(postId);
         PostComment comment = request.toDomain(member, post);
-        commentRepository.save(comment);
+        postCommentRepository.save(comment);
     }
 
     public record Request(
