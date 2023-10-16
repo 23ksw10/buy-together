@@ -1,52 +1,40 @@
 package com.together.buytogether.postcomment.feature;
 
-import com.together.buytogether.member.domain.MemberFixture;
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
 import com.together.buytogether.member.domain.MemberRepository;
-import com.together.buytogether.post.domain.PostFixture;
+import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.post.domain.PostRepository;
-import com.together.buytogether.postcomment.domain.PostComment;
-import com.together.buytogether.postcomment.domain.PostCommentFixture;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
-import org.junit.jupiter.api.BeforeEach;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.util.Assert;
-
-import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class UpdateCommentTest {
+public class UpdateCommentTest extends ApiTest {
+    @Autowired
     private UpdateComment updateComment;
+    @Autowired
     private MemberRepository memberRepository;
+    @Autowired
     private PostRepository postRepository;
+    @Autowired
     private PostCommentRepository postCommentRepository;
+    @Autowired
+    private SessionManager sessionManager;
 
-    @BeforeEach
-    void setUp() {
-        memberRepository = Mockito.mock(MemberRepository.class);
-        postRepository = Mockito.mock(PostRepository.class);
-        postCommentRepository = Mockito.mock(PostCommentRepository.class);
-        updateComment = new UpdateComment(
-                memberRepository,
-                postRepository,
-                postCommentRepository
-        );
-    }
 
     @Test
     @DisplayName("댓글 수정")
     void updateComment() {
-        Mockito.when(memberRepository.getByMemberId(1L))
-                .thenReturn(MemberFixture.aMember().build());
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerComment().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
 
-        Mockito.when(postRepository.getByPostId(1L))
-                .thenReturn(PostFixture.aPost().build());
-        PostComment postComment = PostCommentFixture.aPostComment().build();
-        Mockito.when(postCommentRepository.getByCommentId(1L))
-                .thenReturn(postComment);
         String content = "댓글 수정";
         Long memberId = 1L;
         Long postId = 1L;
@@ -54,41 +42,16 @@ public class UpdateCommentTest {
         UpdateComment.Request request = new UpdateComment.Request(
                 content
         );
-        updateComment.request(memberId, postId, commentId, request);
+        RestAssured.given().log().all()
+                .cookie("JSESSIONID", sessionManager.getAllSessions().get(0).getId())
+                .contentType("application/json")
+                .body(request)
+                .when()
+                .put("/posts/{postId}/comments/{commentId}", postId, commentId)
+                .then().log().all()
+                .statusCode(200);
 
-        assertThat(postComment.getContent()).isEqualTo(content);
+        assertThat(postCommentRepository.getByCommentId(commentId).getContent()).isEqualTo(content);
     }
 
-    private class UpdateComment {
-        MemberRepository memberRepository;
-        PostRepository postRepository;
-        PostCommentRepository postCommentRepository;
-
-        public UpdateComment(
-                MemberRepository memberRepository,
-                PostRepository postRepository,
-                PostCommentRepository postCommentRepository) {
-            this.memberRepository = memberRepository;
-            this.postRepository = postRepository;
-            this.postCommentRepository = postCommentRepository;
-        }
-
-        public void request(Long memberId, Long postId, Long commentId, Request request) {
-            PostComment postComment = postCommentRepository.getByCommentId(commentId);
-            postComment.checkOwner(memberId);
-            postComment.checkPostStatus(postId);
-            postComment.update(
-                    request.content,
-                    LocalDateTime.now()
-            );
-        }
-
-        public record Request(
-                String content
-        ) {
-            public Request {
-                Assert.hasText(content, "댓글 내용은 필수입니다.");
-            }
-        }
-    }
 }
