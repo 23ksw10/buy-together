@@ -7,6 +7,7 @@ import com.together.buytogether.post.feature.api.DeletePostApi;
 import com.together.buytogether.post.feature.api.RegisterPostApi;
 import com.together.buytogether.post.feature.api.UpdatePostApi;
 import com.together.buytogether.postcomment.feature.api.RegisterCommentApi;
+import com.together.buytogether.postcomment.feature.api.UpdateCommentApi;
 
 public class Scenario {
     public static RegisterMemberApi registerMember() {
@@ -35,5 +36,9 @@ public class Scenario {
 
     public RegisterCommentApi registerComment() {
         return new RegisterCommentApi();
+    }
+
+    public UpdateCommentApi updateComment() {
+        return new UpdateCommentApi();
     }
 }
