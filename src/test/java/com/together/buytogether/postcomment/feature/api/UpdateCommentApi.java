@@ -1,7 +1,7 @@
 package com.together.buytogether.postcomment.feature.api;
 
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.postcomment.feature.UpdateComment;
+import com.together.buytogether.postcomment.dto.request.UpdateCommentDTO;
 import io.restassured.RestAssured;
 
 public class UpdateCommentApi {
@@ -31,7 +31,7 @@ public class UpdateCommentApi {
     }
 
     public Scenario request() {
-        UpdateComment.Request request = new UpdateComment.Request(
+        UpdateCommentDTO request = new UpdateCommentDTO(
                 content
         );
         RestAssured.given().log().all()
