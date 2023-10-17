@@ -1,7 +1,7 @@
 package com.together.buytogether.member.feature.api;
 
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.member.feature.SignInMember;
+import com.together.buytogether.member.dto.request.SignInMemberDTO;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ public class SignInMemberApi {
     private final String password = "password";
 
     public Scenario request() {
-        SignInMember.Request request = new SignInMember.Request(
+        SignInMemberDTO request = new SignInMemberDTO(
                 loginId,
                 password);
 
