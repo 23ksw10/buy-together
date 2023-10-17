@@ -2,7 +2,7 @@ package com.together.buytogether.member.feature.api;
 
 import com.together.buytogether.common.Scenario;
 import com.together.buytogether.member.domain.SEX;
-import com.together.buytogether.member.feature.RegisterMember;
+import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
@@ -52,7 +52,7 @@ public class RegisterMemberApi {
     }
 
     public Scenario request() {
-        RegisterMember.Request request = new RegisterMember.Request(
+        RegisterMemberDTO request = new RegisterMemberDTO(
                 name,
                 loginId,
                 password,
