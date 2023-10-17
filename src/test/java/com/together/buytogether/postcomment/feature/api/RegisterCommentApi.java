@@ -1,7 +1,7 @@
 package com.together.buytogether.postcomment.feature.api;
 
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.postcomment.feature.RegisterComment;
+import com.together.buytogether.postcomment.dto.request.RegisterCommentDTO;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 
@@ -42,7 +42,7 @@ public class RegisterCommentApi {
 
 
     public Scenario request() {
-        RegisterComment.Request request = new RegisterComment.Request(
+        RegisterCommentDTO request = new RegisterCommentDTO(
                 content,
                 createAt,
                 updateAt
