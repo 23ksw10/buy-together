@@ -1,52 +1,41 @@
 package com.together.buytogether.postcomment.feature;
 
-import com.together.buytogether.postcomment.domain.PostComment;
-import com.together.buytogether.postcomment.domain.PostCommentFixture;
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
+import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
-import org.junit.jupiter.api.BeforeEach;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
-public class DeleteCommentTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class DeleteCommentTest extends ApiTest {
+    @Autowired
     private DeleteComment deleteComment;
+    @Autowired
     private PostCommentRepository postCommentRepository;
-
-    @BeforeEach
-    void setUp() {
-        postCommentRepository = Mockito.mock(PostCommentRepository.class);
-        deleteComment = new DeleteComment(postCommentRepository);
-    }
+    @Autowired
+    private SessionManager sessionManager;
 
     @Test
     @DisplayName("댓글 삭제")
     void deleteComment() {
-        Long commentId = 1L;
-        Long memberId = 1L;
-        PostComment postComment = PostCommentFixture.aPostComment().build();
-        Mockito.when(postCommentRepository.getByCommentId(commentId))
-                .thenReturn(postComment);
-        deleteComment.request(memberId, commentId);
-        Mockito.verify(postCommentRepository, Mockito.times(1)).delete(postComment);
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .registerComment().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
+
+        RestAssured.given().log().all()
+                .when()
+                .cookie("JSESSIONID", sessionManager.getAllSessions().get(0).getId())
+                .delete("/posts/1/comments/1")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+
+        assertThat(postCommentRepository.findAll()).hasSize(0);
     }
 
-    private class DeleteComment {
-        private final PostCommentRepository postCommentRepository;
-
-        public DeleteComment(PostCommentRepository postCommentRepository) {
-            this.postCommentRepository = postCommentRepository;
-        }
-
-        public void request(Long memberId, Long commentId) {
-            PostComment postComment = postCommentRepository.getByCommentId(commentId);
-            checkOwner(memberId, postComment);
-            postCommentRepository.delete(postComment);
-        }
-
-        private void checkOwner(Long memberId, PostComment postComment) {
-            if (!postComment.checkOwner(memberId)) {
-                throw new IllegalArgumentException("댓글 작성자가 아닙니다.");
-            }
-        }
-    }
 }
