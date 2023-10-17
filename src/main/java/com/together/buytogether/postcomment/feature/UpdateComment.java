@@ -36,7 +36,6 @@ public class UpdateComment {
             @RequestBody @Valid UpdateCommentDTO updateCommentDTO) {
         PostComment postComment = postCommentRepository.getByCommentId(commentId);
         postComment.checkOwner(memberId);
-        postComment.checkPostStatus(postId);
         postComment.update(
                 updateCommentDTO.content(),
                 LocalDateTime.now()

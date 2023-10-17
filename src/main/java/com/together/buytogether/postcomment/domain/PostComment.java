@@ -68,13 +68,14 @@ public class PostComment {
         return this.member.getMemberId().equals(memberId);
     }
 
-    public void checkPostStatus(Long postId) {
+    public void checkPostStatus() {
         if (this.post.getStatus().equals(PostStatus.CLOSED)) {
-            throw new IllegalArgumentException("종료된 게시글 댓글은 수정할 수 없습니다.");
+            throw new IllegalStateException("종료된 게시글 댓글은 수정할 수 없습니다.");
         }
     }
 
     public void update(String content, LocalDateTime now) {
+        checkPostStatus();
         this.content = content;
         this.updatedAt = now;
     }
