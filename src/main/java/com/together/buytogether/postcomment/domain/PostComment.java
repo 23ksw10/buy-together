@@ -64,10 +64,8 @@ public class PostComment {
         }
     }
 
-    public void checkOwner(Long memberId) {
-        if (!this.member.getMemberId().equals(memberId)) {
-            throw new IllegalArgumentException("댓글 작성자만 수정할 수 있습니다.");
-        }
+    public boolean checkOwner(Long memberId) {
+        return this.member.getMemberId().equals(memberId);
     }
 
     public void checkPostStatus(Long postId) {
