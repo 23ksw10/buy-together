@@ -6,6 +6,7 @@ import com.together.buytogether.member.feature.api.SignOutMemberApi;
 import com.together.buytogether.post.feature.api.DeletePostApi;
 import com.together.buytogether.post.feature.api.RegisterPostApi;
 import com.together.buytogether.post.feature.api.UpdatePostApi;
+import com.together.buytogether.postcomment.feature.api.DeleteCommentApi;
 import com.together.buytogether.postcomment.feature.api.RegisterCommentApi;
 import com.together.buytogether.postcomment.feature.api.UpdateCommentApi;
 
@@ -40,5 +41,9 @@ public class Scenario {
 
     public UpdateCommentApi updateComment() {
         return new UpdateCommentApi();
+    }
+
+    public DeleteCommentApi deleteComment() {
+        return new DeleteCommentApi();
     }
 }
