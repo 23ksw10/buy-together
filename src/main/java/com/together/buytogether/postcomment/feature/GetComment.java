@@ -2,6 +2,7 @@ package com.together.buytogether.postcomment.feature;
 
 import com.together.buytogether.postcomment.domain.PostComment;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
+import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +20,10 @@ public class GetComment {
     }
 
     @GetMapping("posts/{postId}/comments")
-    public List<CommentResponse> getAllComment(@PathVariable Long postId) {
+    public List<CommentResponseDTO> getAllComment(@PathVariable Long postId) {
         List<PostComment> comments = postCommentRepository.findAllByPostId(postId);
         return comments.stream()
-                .map(c -> new CommentResponse(
+                .map(c -> new CommentResponseDTO(
                         c.getCommentId(),
                         c.getPost().getPostId(),
                         c.getMember().getName(),
@@ -34,9 +35,9 @@ public class GetComment {
     }
 
     @GetMapping("posts/{postId}/comments/{commentId}")
-    public CommentResponse getComment(@PathVariable Long postId, @PathVariable Long commentId) {
+    public CommentResponseDTO getComment(@PathVariable Long postId, @PathVariable Long commentId) {
         PostComment comment = postCommentRepository.getByCommentId(commentId);
-        return new CommentResponse(
+        return new CommentResponseDTO(
                 comment.getCommentId(),
                 comment.getPost().getPostId(),
                 comment.getMember().getName(),
@@ -44,16 +45,6 @@ public class GetComment {
                 comment.getCreatedAt().toString(),
                 comment.getUpdatedAt().toString()
         );
-    }
-
-    public record CommentResponse(
-            Long commentId,
-            Long postId,
-            String memberName,
-            String content,
-            String createdAt,
-            String updatedAt
-    ) {
     }
 
 }

@@ -2,7 +2,7 @@ package com.together.buytogether.post.feature.api;
 
 import com.together.buytogether.common.Scenario;
 import com.together.buytogether.post.domain.PostStatus;
-import com.together.buytogether.post.feature.UpdatePost;
+import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 
@@ -49,7 +49,7 @@ public class UpdatePostApi {
     }
 
     public Scenario request() {
-        UpdatePost.Request request = new UpdatePost.Request(
+        UpdatePostDTO request = new UpdatePostDTO(
                 newTitle,
                 newContent,
                 PostStatus.OPEN,

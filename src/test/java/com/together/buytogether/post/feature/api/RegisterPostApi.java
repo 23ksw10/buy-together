@@ -2,7 +2,7 @@ package com.together.buytogether.post.feature.api;
 
 import com.together.buytogether.common.Scenario;
 import com.together.buytogether.post.domain.PostStatus;
-import com.together.buytogether.post.feature.RegisterPost;
+import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 
@@ -44,7 +44,7 @@ public class RegisterPostApi {
 
 
     public Scenario request() {
-        RegisterPost.Request request = new RegisterPost.Request(
+        RegisterPostDTO request = new RegisterPostDTO(
                 title,
                 content,
                 status,

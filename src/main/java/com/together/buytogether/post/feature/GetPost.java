@@ -3,6 +3,7 @@ package com.together.buytogether.post.feature;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.post.dto.response.PostResponseDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,10 +21,10 @@ public class GetPost {
     }
 
     @GetMapping("/posts")
-    public List<PostResponse> getPosts() {
+    public List<PostResponseDTO> getPosts() {
         List<Post> posts = postRepository.findAll();
         return posts.stream()
-                .map(p -> new PostResponse(
+                .map(p -> new PostResponseDTO(
                         p.getMember().getName(),
                         p.getPostId(),
                         p.getTitle(),
@@ -34,10 +35,10 @@ public class GetPost {
     }
 
     @GetMapping("/posts/{postId}")
-    public PostResponse getPost(@PathVariable Long postId) {
+    public PostResponseDTO getPost(@PathVariable Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 게시글입니다"));
-        return new PostResponse(
+        return new PostResponseDTO(
                 post.getMember().getName(),
                 post.getPostId(),
                 post.getTitle(),
@@ -46,12 +47,4 @@ public class GetPost {
         );
     }
 
-    private record PostResponse(
-            String memberName,
-            Long postId,
-            String title,
-            String content,
-            String expiredAt) {
-
-    }
 }
