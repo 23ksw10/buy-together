@@ -1,5 +1,6 @@
 package com.together.buytogether.common;
 
+import com.together.buytogether.enroll.feature.api.JoinBuyingApi;
 import com.together.buytogether.member.feature.api.RegisterMemberApi;
 import com.together.buytogether.member.feature.api.SignInMemberApi;
 import com.together.buytogether.member.feature.api.SignOutMemberApi;
@@ -45,5 +46,9 @@ public class Scenario {
 
     public DeleteCommentApi deleteComment() {
         return new DeleteCommentApi();
+    }
+
+    public JoinBuyingApi joinBuying() {
+        return new JoinBuyingApi();
     }
 }
