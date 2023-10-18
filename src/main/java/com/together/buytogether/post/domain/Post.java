@@ -2,6 +2,7 @@ package com.together.buytogether.post.domain;
 
 import com.together.buytogether.member.domain.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,24 +46,40 @@ public class Post {
     @Comment("글 만료일")
     private LocalDateTime expiredAt;
 
+    @Column(name = "max_join_count", nullable = false)
+    @Comment("최대 구매 참여 인원")
+    @Min(value = 1, message = "최대 구매 참여 인원은 1명 이상이어야 합니다")
+    private Long maxJoinCount;
+
+    @Column(name = "join_count", nullable = false)
+    @Comment("구매 참여 인원")
+    @Min(value = 0, message = "구매 참여 인원은 0명 이상이어야 합니다")
+    private Long joinCount;
+
     public Post(
             Member member,
             String title,
             String content,
             PostStatus status,
-            LocalDateTime expiredAt) {
+            LocalDateTime expiredAt,
+            Long maxJoinCount,
+            Long joinCount) {
         validateConstructor(
                 member,
                 title,
                 content,
                 status,
-                expiredAt);
+                expiredAt,
+                maxJoinCount,
+                joinCount);
 
         this.member = member;
         this.title = title;
         this.content = content;
         this.status = status;
         this.expiredAt = expiredAt;
+        this.maxJoinCount = maxJoinCount;
+        this.joinCount = joinCount;
     }
 
     private static void validateConstructor(
@@ -70,12 +87,22 @@ public class Post {
             String title,
             String content,
             PostStatus status,
-            LocalDateTime expiredAt) {
+            LocalDateTime expiredAt,
+            Long maxJoinCount,
+            Long joinCount) {
         Assert.notNull(member, "회원 정보는 필수입니다");
         Assert.hasText(title, "글 제목은 필수입니다");
         Assert.hasText(content, "글 내용은 필수입니다");
         Assert.notNull(status, "글 상태는 필수입니다");
         Assert.notNull(expiredAt, "글 만료일은 필수입니다");
+        Assert.notNull(maxJoinCount, "최대 구매 참여 인원은 필수입니다");
+        if (maxJoinCount < 1) {
+            throw new IllegalArgumentException("최대 구매 참여 인원은 1명 이상이어야 합니다");
+        }
+        Assert.notNull(joinCount, "구매 참여 인원은 필수입니다");
+        if (joinCount < 0) {
+            throw new IllegalArgumentException("구매 참여 인원은 0명 이상이어야 합니다");
+        }
     }
 
 
@@ -102,11 +129,20 @@ public class Post {
             String title,
             String content,
             PostStatus status,
-            LocalDateTime expiredAt) {
+            LocalDateTime expiredAt,
+            Long maxJoinCount) {
         validateUpdate(title, content, status, expiredAt);
         this.title = title;
         this.content = content;
         this.status = status;
         this.expiredAt = expiredAt;
+        this.maxJoinCount = maxJoinCount;
+    }
+
+    public void increaseJoinCount() {
+        if (joinCount >= maxJoinCount) {
+            throw new IllegalStateException("최대 구매 참여 인원을 초과했습니다");
+        }
+        joinCount++;
     }
 }
