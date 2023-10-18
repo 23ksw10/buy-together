@@ -28,7 +28,8 @@ public class UpdatePost {
                 updatePostDTO.title(),
                 updatePostDTO.content(),
                 updatePostDTO.status(),
-                updatePostDTO.expiredAt()
+                updatePostDTO.expiredAt(),
+                updatePostDTO.maxJoinCount()
         );
     }
 

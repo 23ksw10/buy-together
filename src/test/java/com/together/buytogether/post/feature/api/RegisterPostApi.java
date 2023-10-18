@@ -14,8 +14,9 @@ public class RegisterPostApi {
 
     private PostStatus status = PostStatus.OPEN;
     private LocalDateTime expiredAt = LocalDateTime.now().plusHours(10);
-
     private String cookieValue;
+    private Long maxJoinCount = 1L;
+    private Long joinCount = 0L;
 
     public RegisterPostApi title(String title) {
         this.title = title;
@@ -42,13 +43,24 @@ public class RegisterPostApi {
         return this;
     }
 
+    public RegisterPostApi maxJoinCount(Long maxJoinCount) {
+        this.maxJoinCount = maxJoinCount;
+        return this;
+    }
+
+    public RegisterPostApi joinCount(Long joinCount) {
+        this.joinCount = joinCount;
+        return this;
+    }
 
     public Scenario request() {
         RegisterPostDTO request = new RegisterPostDTO(
                 title,
                 content,
                 status,
-                expiredAt
+                expiredAt,
+                maxJoinCount,
+                joinCount
         );
         RestAssured.given().log().all()
                 .cookie(cookieValue)

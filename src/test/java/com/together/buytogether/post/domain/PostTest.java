@@ -16,7 +16,7 @@ public class PostTest {
         Post post = PostFixture.aPost().build();
         String beforeTitle = post.getTitle();
         String beforeContent = post.getContent();
-        post.update("newTitle", "newContent", PostStatus.OPEN, LocalDateTime.now().plusDays(2));
+        post.update("newTitle", "newContent", PostStatus.OPEN, LocalDateTime.now().plusDays(2), post.getMaxJoinCount());
         assertThat(beforeTitle).isEqualTo("title");
         assertThat(post.getTitle()).isEqualTo("newTitle");
         assertThat(beforeContent).isEqualTo("content");
@@ -29,7 +29,10 @@ public class PostTest {
     void fail_invalid_status_updatePost() {
         Post post = PostFixture.aPost().status(PostStatus.CLOSED).build();
         assertThatThrownBy(() -> {
-            post.update("newTitle", "newContent", PostStatus.OPEN, LocalDateTime.now().plusDays(2));
+            post.update("newTitle",
+                    "newContent",
+                    PostStatus.OPEN, LocalDateTime.now().plusDays(2),
+                    post.getMaxJoinCount());
         })
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("종료된 게시글은 수정할 수 없습니다");

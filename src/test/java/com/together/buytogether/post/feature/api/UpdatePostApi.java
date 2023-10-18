@@ -16,6 +16,7 @@ public class UpdatePostApi {
     private PostStatus status = PostStatus.OPEN;
 
     private LocalDateTime expiredAt = LocalDateTime.now().plusDays(2);
+    private Long maxJoinCount = 1L;
     private String cookieValue = "";
 
     public UpdatePostApi postId(Long postId) {
@@ -48,12 +49,18 @@ public class UpdatePostApi {
         return this;
     }
 
+    public UpdatePostApi maxJoinCount(Long maxJoinCount) {
+        this.maxJoinCount = maxJoinCount;
+        return this;
+    }
+
     public Scenario request() {
         UpdatePostDTO request = new UpdatePostDTO(
                 newTitle,
                 newContent,
                 PostStatus.OPEN,
-                expiredAt
+                expiredAt,
+                maxJoinCount
         );
 
         RestAssured.given().log().all()

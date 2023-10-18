@@ -15,5 +15,7 @@ public record UpdatePostDTO(
         @NotNull(message = "글 상태는 필수입니다")
         PostStatus status,
         @NotNull(message = "글 만료일은 필수입니다")
-        LocalDateTime expiredAt) {
+        LocalDateTime expiredAt,
+        @NotNull(message = "최대 구매 참여 인원은 필수입니다")
+        Long maxJoinCount) {
 }

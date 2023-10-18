@@ -11,6 +11,8 @@ public class PostFixture {
 
     private PostStatus status = PostStatus.OPEN;
     private LocalDateTime expiredAt = LocalDateTime.now().plusDays(1);
+    private Long maxJoinCount = 1L;
+    private Long joinCount = 0L;
 
     public static PostFixture aPost() {
         return new PostFixture();
@@ -36,13 +38,25 @@ public class PostFixture {
         return this;
     }
 
+    public PostFixture maxJoinCount(Long maxJoinCount) {
+        this.maxJoinCount = maxJoinCount;
+        return this;
+    }
+
+    public PostFixture joinCount(Long joinCount) {
+        this.joinCount = joinCount;
+        return this;
+    }
+
     public Post build() {
         return new Post(
                 memberFixture.build(),
                 title,
                 content,
                 status,
-                expiredAt
+                expiredAt,
+                maxJoinCount,
+                joinCount
         );
     }
 }
