@@ -1,25 +1,12 @@
 package com.together.buytogether.enroll.domain;
 
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.*;
+import java.util.Optional;
 
-@Component
-public class EnrollRepository {
-    private final Map<Long, Enroll> enrollMap = new HashMap<>();
-    Long enrollId = 1L;
-
-    public Optional<Enroll> findByMemberId(Long memberId) {
-        return Optional.ofNullable(enrollMap.get(memberId));
-    }
-
-    public List<Enroll> findAll() {
-        return new ArrayList<>(enrollMap.values());
-    }
-
-    public void save(Enroll enroll) {
-        enroll.assignId(enrollId);
-        enrollId++;
-        enrollMap.put(enrollId, enroll);
-    }
+public interface EnrollRepository extends JpaRepository<Enroll, Long> {
+    @Query("select e from Enroll e join fetch e.member m join fetch e.post p where m.memberId = :memberId and p.postId = :postId")
+    Optional<Enroll> findByMemberIdAndPostId(@Param("memberId") Long memberId, @Param("postId") Long postId);
 }

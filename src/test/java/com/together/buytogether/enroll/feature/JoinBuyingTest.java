@@ -19,7 +19,6 @@ public class JoinBuyingTest extends ApiTest {
     @Autowired
     SessionManager sessionManager;
 
-
     @Test
     @DisplayName("구매 참여")
     void joinBuying() {

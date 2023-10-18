@@ -10,6 +10,8 @@ import com.together.buytogether.post.domain.PostRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 public class JoinBuying {
     PostRepository postRepository;
@@ -32,10 +34,10 @@ public class JoinBuying {
             @PathVariable Long postId) {
         Post post = postRepository.getByPostId(postId);
         Member member = memberRepository.getByMemberId(memberId);
-        enrollRepository.findByMemberId(memberId).ifPresent(enroll -> {
+        enrollRepository.findByMemberIdAndPostId(memberId, postId).ifPresent(enroll -> {
             throw new IllegalArgumentException("이미 참여한 구매글입니다.");
         });
-        Enroll enroll = new Enroll(member, post);
+        Enroll enroll = new Enroll(member, post, LocalDateTime.now());
         post.increaseJoinCount();
         enrollRepository.save(enroll);
     }
