@@ -1,62 +1,31 @@
 package com.together.buytogether.enroll.feature;
 
-import com.together.buytogether.enroll.domain.Enroll;
-import com.together.buytogether.enroll.domain.EnrollFixture;
+import com.together.buytogether.common.ApiTest;
+import com.together.buytogether.common.Scenario;
 import com.together.buytogether.enroll.domain.EnrollRepository;
-import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostFixture;
-import com.together.buytogether.post.domain.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.together.buytogether.member.domain.SessionManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class CancelBuyingTest {
-    private CancelBuying cancelBuying;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class CancelBuyingTest extends ApiTest {
+    @Autowired
     private EnrollRepository enrollRepository;
-    private PostRepository postRepository;
+    @Autowired
+    private SessionManager sessionManager;
 
-    @BeforeEach
-    void setUp() {
-        enrollRepository = Mockito.mock(EnrollRepository.class);
-        postRepository = Mockito.mock(PostRepository.class);
-        cancelBuying = new CancelBuying(enrollRepository, postRepository);
-    }
 
     @Test
     @DisplayName("구매 취소")
     void cancelBuying() {
-        Long memberId = 1L;
-        Long postId = 1L;
-        PostFixture postFixture = PostFixture.aPost().maxJoinCount(20L).joinCount(1L);
-        Enroll enroll = EnrollFixture.aEnroll().postFixture(postFixture).build();
-        Mockito.when(enrollRepository.getEnroll(memberId, postId))
-                .thenReturn(enroll);
-        Mockito.when(postRepository.getByPostId(1L))
-                .thenReturn(postFixture.build());
-
-        cancelBuying.request(memberId, postId);
-
-        Mockito.verify(enrollRepository, Mockito.times(1))
-                .delete(enroll);
+        Scenario.registerMember().request()
+                .signInMember().request()
+                .registerPost().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .joinBuying().cookieValue(sessionManager.getAllSessions().get(0).getId()).request()
+                .cancelBuying().cookieValue(sessionManager.getAllSessions().get(0).getId()).request();
+        assertThat(enrollRepository.findAll().size()).isEqualTo(0);
     }
 
-    private class CancelBuying {
-        private final EnrollRepository enrollRepository;
-
-        private final PostRepository postRepository;
-
-        public CancelBuying(EnrollRepository enrollRepository, PostRepository postRepository) {
-            this.enrollRepository = enrollRepository;
-            this.postRepository = postRepository;
-        }
-
-        public void request(Long memberId, Long postId) {
-            Post post = postRepository.getByPostId(postId);
-            Enroll enroll = enrollRepository.getEnroll(memberId, postId);
-            post.decreaseJoinCount();
-            enrollRepository.delete(enroll);
-        }
-
-    }
 }
