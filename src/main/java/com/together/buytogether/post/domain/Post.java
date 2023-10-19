@@ -145,4 +145,11 @@ public class Post {
         }
         joinCount++;
     }
+
+    public void decreaseJoinCount() {
+        if (joinCount <= 0) {
+            throw new IllegalStateException("구매 참여 인원이 0명 미만일 수는 없습니다");
+        }
+        joinCount--;
+    }
 }
