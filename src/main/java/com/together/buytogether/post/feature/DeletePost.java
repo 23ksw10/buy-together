@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 @RestController
 class DeletePost {
 
-    PostService postService;
+    private final PostService postService;
 
     public DeletePost(PostService postService) {
         this.postService = postService;

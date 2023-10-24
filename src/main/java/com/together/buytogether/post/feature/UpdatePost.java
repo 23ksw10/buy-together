@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UpdatePost {
-    PostService postService;
+    private final PostService postService;
 
     public UpdatePost(PostService postService) {
         this.postService = postService;
