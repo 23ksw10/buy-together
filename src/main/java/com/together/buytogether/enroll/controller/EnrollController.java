@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("posts/{postId}/enrolls")
+@RequestMapping("/posts/{postId}/enrolls")
 public class EnrollController {
     private final EnrollService enrollService;
 

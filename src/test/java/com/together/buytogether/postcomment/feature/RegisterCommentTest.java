@@ -13,11 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RegisterCommentTest extends ApiTest {
 
     @Autowired
-    PostCommentRepository postCommentRepository;
+    private PostCommentRepository postCommentRepository;
     @Autowired
-    RegisterComment registerComment;
-    @Autowired
-    SessionManager sessionManager;
+    private SessionManager sessionManager;
 
 
     @Test
