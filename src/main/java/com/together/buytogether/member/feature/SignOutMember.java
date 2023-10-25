@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 class SignOutMember {
     private final SessionManager sessionManager;
 
-    SignOutMember(SessionManager sessionManager) {
+    public SignOutMember(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
 

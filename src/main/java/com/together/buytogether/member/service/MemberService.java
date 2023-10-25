@@ -15,10 +15,10 @@ public class MemberService {
     }
 
     @Transactional
-    public Long registerMember(RegisterMemberDTO registerMemberDTO) {
+    public void registerMember(RegisterMemberDTO registerMemberDTO) {
         validateDuplicateMember(registerMemberDTO.loginId());
         Member member = registerMemberDTO.toDomain();
-        return memberRepository.save(member).getMemberId();
+        memberRepository.save(member);
     }
 
     private void validateDuplicateMember(String loginId) {
