@@ -7,6 +7,7 @@ import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
+import com.together.buytogether.post.dto.response.PostResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,12 +56,28 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Post getPost(Long postId) {
-        return commonPostService.getPost(postId);
+    public PostResponseDTO getPost(Long postId) {
+        Post post = commonPostService.getPost(postId);
+        return new PostResponseDTO(
+                post.getMember().getName(),
+                post.getPostId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getExpiredAt().toString()
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<PostResponseDTO> getPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                .map(p -> new PostResponseDTO(
+                        p.getMember().getName(),
+                        p.getPostId(),
+                        p.getTitle(),
+                        p.getContent(),
+                        p.getExpiredAt().toString()
+                ))
+                .toList();
     }
 }
