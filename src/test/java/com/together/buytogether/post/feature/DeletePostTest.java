@@ -12,11 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeletePostTest extends ApiTest {
     @Autowired
-    DeletePost deletePost;
+    private PostRepository postRepository;
     @Autowired
-    PostRepository postRepository;
-    @Autowired
-    SessionManager sessionManager;
+    private SessionManager sessionManager;
 
     @Test
     @DisplayName("게시글 삭제")

@@ -23,7 +23,7 @@ public class JoinBuyingApi {
         RestAssured.given().log().all()
                 .cookie("JSESSIONID", cookieValue)
                 .when()
-                .post("/posts/{postId}/enroll", postId)
+                .post("/posts/{postId}/enrolls", postId)
                 .then().log().all().statusCode(HttpStatus.CREATED.value());
         return new Scenario();
     }
