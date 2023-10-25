@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CommonPostService {
-    PostRepository postRepository;
+    private final PostRepository postRepository;
 
     public CommonPostService(PostRepository postRepository) {
         this.postRepository = postRepository;

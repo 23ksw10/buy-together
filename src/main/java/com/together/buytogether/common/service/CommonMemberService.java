@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CommonMemberService {
-    MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public CommonMemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
