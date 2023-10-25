@@ -1,4 +1,4 @@
-package com.together.buytogether.enroll.feature;
+package com.together.buytogether.enroll.controller;
 
 import com.together.buytogether.enroll.service.EnrollService;
 import com.together.buytogether.member.domain.SessionConst;
@@ -6,16 +6,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class JoinBuying {
+@RequestMapping("posts/{postId}/enrolls")
+public class EnrollController {
     private final EnrollService enrollService;
 
-    public JoinBuying(EnrollService enrollService) {
+    public EnrollController(EnrollService enrollService) {
         this.enrollService = enrollService;
     }
 
-    @PostMapping("/posts/{postId}/enroll")
+    @DeleteMapping()
+    public void cancelBuying(
+            @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+            @PathVariable Long postId) {
+        enrollService.cancelBuying(memberId, postId);
+    }
+
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void request(
+    public void joinBuying(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId) {
         enrollService.joinBuying(memberId, postId);
