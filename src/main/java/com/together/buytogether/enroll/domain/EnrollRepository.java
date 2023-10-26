@@ -1,5 +1,7 @@
 package com.together.buytogether.enroll.domain;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +14,6 @@ public interface EnrollRepository extends JpaRepository<Enroll, Long> {
 
     default Enroll getEnroll(Long memberId, Long postId) {
         return findByMemberIdAndPostId(memberId, postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 구매 정보가 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.ENROLL_NOT_FOUND));
     }
 }

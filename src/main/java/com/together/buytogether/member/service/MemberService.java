@@ -1,5 +1,7 @@
 package com.together.buytogether.member.service;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
@@ -25,7 +27,7 @@ public class MemberService {
         memberRepository.findByLoginId(loginId).stream()
                 .findFirst()
                 .ifPresent(member -> {
-                    throw new IllegalArgumentException("이미 존재하는 회원입니다");
+                    throw new CustomException(ErrorCode.MEMBER_ALREADY_EXIST);
                 });
     }
 
@@ -33,6 +35,6 @@ public class MemberService {
         return memberRepository.findByLoginId(loginId).stream()
                 .filter(m -> m.getPassword().equals(password))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

@@ -1,5 +1,7 @@
 package com.together.buytogether.member.domain;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -9,7 +11,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     default Member getByMemberId(Long memberId) {
         return findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 회원입니다")
+                () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
         );
     }
 }
