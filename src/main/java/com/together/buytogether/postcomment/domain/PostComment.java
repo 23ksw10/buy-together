@@ -1,5 +1,7 @@
 package com.together.buytogether.postcomment.domain;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostStatus;
@@ -70,7 +72,7 @@ public class PostComment {
 
     public void checkPostStatus() {
         if (this.post.getStatus().equals(PostStatus.CLOSED)) {
-            throw new IllegalStateException("종료된 게시글 댓글은 수정할 수 없습니다.");
+            throw new CustomException(ErrorCode.POST_CLOSED);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.together.buytogether.enroll.service;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonPostService;
 import com.together.buytogether.enroll.domain.Enroll;
@@ -32,7 +34,7 @@ public class EnrollService {
         Member member = commonMemberService.getMember(memberId);
         Post post = commonPostService.getPost(postId);
         enrollRepository.findByMemberIdAndPostId(memberId, postId).ifPresent(enroll -> {
-            throw new IllegalArgumentException("이미 참여한 구매글입니다.");
+            throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
         });
         Enroll enroll = new Enroll(member, post, LocalDateTime.now());
         post.increaseJoinCount();
@@ -43,7 +45,7 @@ public class EnrollService {
     public void cancelBuying(Long memberId, Long postId) {
         Post post = commonPostService.getPost(postId);
         Enroll enroll = enrollRepository.findByMemberIdAndPostId(memberId, postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("참여하지 않은 구매글입니다.");
+            throw new CustomException(ErrorCode.ENROLL_NOT_FOUND);
         });
         post.decreaseJoinCount();
         enrollRepository.delete(enroll);

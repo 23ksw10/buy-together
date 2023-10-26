@@ -1,5 +1,7 @@
 package com.together.buytogether.postcomment.service;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonPostService;
 import com.together.buytogether.member.domain.Member;
@@ -84,7 +86,7 @@ public class PostCommentService {
 
     public void checkOwner(Long memberId, PostComment postComment) {
         if (!postComment.checkOwner(memberId)) {
-            throw new IllegalArgumentException("댓글 작성자가 아닙니다.");
+            throw new CustomException(ErrorCode.IS_NOT_OWNER);
         }
     }
 

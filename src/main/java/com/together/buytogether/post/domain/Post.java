@@ -1,5 +1,7 @@
 package com.together.buytogether.post.domain;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -141,14 +143,14 @@ public class Post {
 
     public void increaseJoinCount() {
         if (joinCount >= maxJoinCount) {
-            throw new IllegalStateException("최대 구매 참여 인원을 초과했습니다");
+            throw new CustomException(ErrorCode.GATHERING_FINISHED);
         }
         joinCount++;
     }
 
     public void decreaseJoinCount() {
         if (joinCount <= 0) {
-            throw new IllegalStateException("구매 참여 인원이 0명 미만일 수는 없습니다");
+            throw new CustomException(ErrorCode.ENROLL_MEMBER_NOT_BE_NEGATIVE);
         }
         joinCount--;
     }
