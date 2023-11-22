@@ -3,6 +3,7 @@ package com.together.buytogether.member.dto.request;
 import com.together.buytogether.member.domain.Address;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.SEX;
+import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.util.Assert;
@@ -37,8 +38,8 @@ public record RegisterMemberDTO(
         return new Member(
                 name,
                 loginId,
-                "password",
-                "phoneNumber",
+                HashingUtil.encrypt(password),
+                phoneNumber,
                 sex,
                 new Address(address, detailAddress)
         );
