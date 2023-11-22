@@ -6,6 +6,7 @@ import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import com.together.buytogether.member.dto.request.SignInMemberDTO;
 import com.together.buytogether.member.service.MemberService;
+import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -37,7 +38,8 @@ public class MemberController {
     public void signInMember(
             @RequestBody @Valid SignInMemberDTO signInMemberDTO,
             HttpServletRequest httpServletRequest) {
-        Member logInMember = memberService.getLogInMember(signInMemberDTO.loginId(), signInMemberDTO.password());
+        String encryptPassword = HashingUtil.encrypt(signInMemberDTO.password());
+        Member logInMember = memberService.getLogInMember(signInMemberDTO.loginId(), encryptPassword);
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
         String sessionId = httpSession.getId();
