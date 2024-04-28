@@ -30,12 +30,12 @@ public class MemberController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerMember(@RequestBody @Valid RegisterMemberDTO registerMemberDTO) {
+    public void signUp(@RequestBody @Valid RegisterMemberDTO registerMemberDTO) {
         memberService.registerMember(registerMemberDTO);
     }
 
     @PostMapping("/sign-in")
-    public void signInMember(
+    public void signIn(
             @RequestBody @Valid SignInMemberDTO signInMemberDTO,
             HttpServletRequest httpServletRequest) {
         String encryptPassword = HashingUtil.encrypt(signInMemberDTO.password());
@@ -47,7 +47,7 @@ public class MemberController {
     }
 
     @PostMapping("/sign-out")
-    public void signOutMember(HttpServletRequest request) {
+    public void signOut(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
