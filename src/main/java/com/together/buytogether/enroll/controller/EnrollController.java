@@ -15,7 +15,7 @@ public class EnrollController {
     }
 
     @DeleteMapping()
-    public void cancelBuying(
+    public void cancel(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId) {
         enrollService.cancelBuying(memberId, postId);
@@ -23,7 +23,7 @@ public class EnrollController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void joinBuying(
+    public void join(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId) {
         enrollService.joinBuying(memberId, postId);
