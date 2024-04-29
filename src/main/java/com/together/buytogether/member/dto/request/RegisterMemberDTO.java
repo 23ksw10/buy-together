@@ -1,14 +1,14 @@
 package com.together.buytogether.member.dto.request;
 
 import com.together.buytogether.member.domain.Address;
+import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.member.domain.SEX;
-import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import org.springframework.util.Assert;
 
-
+@Builder
 public record RegisterMemberDTO(
         @NotBlank(message = "이름은 필수 값입니다")
         String name,
@@ -19,7 +19,7 @@ public record RegisterMemberDTO(
         @NotBlank(message = "전화번호는 필수 값입니다")
         String phoneNumber,
         @NotNull(message = "성별은 필수 값입니다")
-        SEX sex,
+        Gender gender,
         @NotBlank(message = "주소는 필수 값입니다")
         String address,
         @NotBlank(message = "상세 주소는 필수 값입니다")
@@ -29,18 +29,20 @@ public record RegisterMemberDTO(
         Assert.hasText(loginId, "로그인 아이디는 필수 값입니다");
         Assert.hasText(password, "비밀번호는 필수 값입니다");
         Assert.hasText(phoneNumber, "전화번호는 필수 값입니다");
-        Assert.notNull(sex, "성별은 필수 값입니다");
+        Assert.notNull(gender, "성별은 필수 값입니다");
         Assert.hasText(address, "주소는 필수 값입니다");
         Assert.hasText(detailAddress, "상세 주소는 필수 값입니다");
     }
+
 
     public Member toDomain() {
         return new Member(
                 name,
                 loginId,
-                HashingUtil.encrypt(password),
+//                HashingUtil.encrypt(password),
+                password,
                 phoneNumber,
-                sex,
+                gender,
                 new Address(address, detailAddress)
         );
     }

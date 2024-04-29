@@ -1,7 +1,7 @@
 package com.together.buytogether.member.feature.api;
 
 import com.together.buytogether.common.Scenario;
-import com.together.buytogether.member.domain.SEX;
+import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,7 +12,7 @@ public class RegisterMemberApi {
     private String loginId = "loginId";
     private String password = "password";
     private String phoneNumber = "phoneNumber";
-    private SEX sex = SEX.MALE;
+    private Gender gender = Gender.MALE;
     private String address = "경기도 고양시 덕양구 화정로 27";
     private String detailAddress = "625동 1004호";
 
@@ -36,8 +36,8 @@ public class RegisterMemberApi {
         return this;
     }
 
-    public RegisterMemberApi sex(SEX sex) {
-        this.sex = sex;
+    public RegisterMemberApi sex(Gender gender) {
+        this.gender = gender;
         return this;
     }
 
@@ -57,7 +57,7 @@ public class RegisterMemberApi {
                 loginId,
                 password,
                 phoneNumber,
-                sex,
+                gender,
                 address, //도로명 주소
                 detailAddress    //상세 주소
         );

@@ -1,12 +1,12 @@
 package com.together.buytogether.member.domain;
 
-public enum SEX {
+public enum Gender {
     MALE("남자"),
     FEMALE("여자");
 
     private final String description;
 
-    SEX(String description) {
+    Gender(String description) {
         this.description = description;
     }
 }
