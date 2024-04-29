@@ -3,6 +3,7 @@ package com.together.buytogether.member.dto.request;
 import com.together.buytogether.member.domain.Address;
 import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
+import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -39,8 +40,7 @@ public record RegisterMemberDTO(
         return new Member(
                 name,
                 loginId,
-//                HashingUtil.encrypt(password),
-                password,
+                HashingUtil.encrypt(password),
                 phoneNumber,
                 gender,
                 new Address(address, detailAddress)
