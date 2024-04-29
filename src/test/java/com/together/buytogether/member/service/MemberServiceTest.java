@@ -6,6 +6,7 @@ import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
+import com.together.buytogether.member.dto.request.SignInMemberDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,10 +42,13 @@ public class MemberServiceTest {
     private RegisterMemberDTO registerMemberDTO;
     private Member member;
 
+    private SignInMemberDTO signInMemberDTO;
+
     @BeforeEach
     public void setUp() {
         registerMemberDTO = createMember();
         member = registerMemberDTO.toDomain();
+        signInMemberDTO = signInRequest();
     }
 
     @Test
@@ -82,6 +86,35 @@ public class MemberServiceTest {
 
     }
 
+    @Test
+    @DisplayName("로그인 - 이메일, 패스워드가 일치하는 사용자는 로그인에 성공한다")
+    public void longIn_successful() {
+        //given
+        given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.of(member));
+
+        //when
+        memberService.signIn(signInMemberDTO.loginId(), signInMemberDTO.password());
+
+        //then
+        then(memberRepository).should().findByLoginIdAndPassword(LOGIN_ID, PASSWORD);
+
+    }
+
+    @Test
+    @DisplayName("로그인 - 이메일, 패스워드가 일치하지 않는 사용자는 로그인에 실패한다")
+    public void longIn_fail() {
+        //given
+        given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.empty());
+
+        //when
+        assertThrows(CustomException.class, () -> memberService.signIn(signInMemberDTO.loginId(), signInMemberDTO.password()));
+
+        //then
+        then(memberRepository).should().findByLoginIdAndPassword(LOGIN_ID, PASSWORD);
+
+
+    }
+
     private RegisterMemberDTO createMember() {
         return RegisterMemberDTO.builder()
                 .name(NAME)
@@ -91,6 +124,13 @@ public class MemberServiceTest {
                 .gender(GENDER)
                 .address(ADDRESS)
                 .detailAddress(DETAIL_ADDRESS)
+                .build();
+    }
+
+    private SignInMemberDTO signInRequest() {
+        return SignInMemberDTO.builder()
+                .loginId(LOGIN_ID)
+                .password(PASSWORD)
                 .build();
     }
 
