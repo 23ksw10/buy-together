@@ -25,7 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class SignUpTest {
+public class MemberServiceTest {
 
     private final String NAME = "name";
     private final String LOGIN_ID = "loginId";
