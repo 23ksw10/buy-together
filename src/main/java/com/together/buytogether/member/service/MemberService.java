@@ -31,10 +31,8 @@ public class MemberService {
                 });
     }
 
-    public Member getLogInMember(String loginId, String password) {
-        return memberRepository.findByLoginId(loginId).stream()
-                .filter(m -> m.getPassword().equals(password))
-                .findFirst()
+    public Member signIn(String loginId, String password) {
+        return memberRepository.findByLoginIdAndPassword(loginId, password)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

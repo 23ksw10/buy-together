@@ -39,7 +39,7 @@ public class MemberController {
             @RequestBody @Valid SignInMemberDTO signInMemberDTO,
             HttpServletRequest httpServletRequest) {
         String encryptPassword = HashingUtil.encrypt(signInMemberDTO.password());
-        Member logInMember = memberService.getLogInMember(signInMemberDTO.loginId(), encryptPassword);
+        Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword);
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
         String sessionId = httpSession.getId();
