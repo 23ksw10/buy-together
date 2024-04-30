@@ -2,7 +2,6 @@ package com.together.buytogether.member.controller;
 
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import com.together.buytogether.member.dto.request.SignInMemberDTO;
 import com.together.buytogether.member.service.MemberService;
@@ -18,14 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final SessionManager sessionManager;
 
 
-    public MemberController(
-            MemberService memberService,
-            SessionManager sessionManager) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.sessionManager = sessionManager;
     }
 
     @PostMapping()
@@ -42,8 +37,7 @@ public class MemberController {
         Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword);
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
-        String sessionId = httpSession.getId();
-        sessionManager.createSession(sessionId, httpSession);
+
     }
 
     @PostMapping("/sign-out")
@@ -52,6 +46,5 @@ public class MemberController {
         if (session != null) {
             session.invalidate();
         }
-        sessionManager.invalidateSession(session.getId());
     }
 }
