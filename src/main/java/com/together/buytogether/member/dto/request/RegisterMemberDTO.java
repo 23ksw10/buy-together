@@ -7,7 +7,6 @@ import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import org.springframework.util.Assert;
 
 @Builder
 public record RegisterMemberDTO(
@@ -25,16 +24,6 @@ public record RegisterMemberDTO(
         String address,
         @NotBlank(message = "상세 주소는 필수 값입니다")
         String detailAddress) {
-    public RegisterMemberDTO {
-        Assert.hasText(name, "이름은 필수 값입니다");
-        Assert.hasText(loginId, "로그인 아이디는 필수 값입니다");
-        Assert.hasText(password, "비밀번호는 필수 값입니다");
-        Assert.hasText(phoneNumber, "전화번호는 필수 값입니다");
-        Assert.notNull(gender, "성별은 필수 값입니다");
-        Assert.hasText(address, "주소는 필수 값입니다");
-        Assert.hasText(detailAddress, "상세 주소는 필수 값입니다");
-    }
-
 
     public Member toDomain() {
         return new Member(
