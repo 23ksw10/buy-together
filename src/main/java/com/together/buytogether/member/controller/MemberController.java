@@ -1,8 +1,9 @@
 package com.together.buytogether.member.controller;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import com.together.buytogether.member.dto.request.SignInMemberDTO;
 import com.together.buytogether.member.service.MemberService;
@@ -18,14 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final SessionManager sessionManager;
 
 
-    public MemberController(
-            MemberService memberService,
-            SessionManager sessionManager) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.sessionManager = sessionManager;
     }
 
     @PostMapping()
@@ -39,11 +36,11 @@ public class MemberController {
             @RequestBody @Valid SignInMemberDTO signInMemberDTO,
             HttpServletRequest httpServletRequest) {
         String encryptPassword = HashingUtil.encrypt(signInMemberDTO.password());
-        Member logInMember = memberService.getLogInMember(signInMemberDTO.loginId(), encryptPassword);
+        Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_ID_PW));
         HttpSession httpSession = httpServletRequest.getSession();
-        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
-        String sessionId = httpSession.getId();
-        sessionManager.createSession(sessionId, httpSession);
+        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getLoginId());
+
     }
 
     @PostMapping("/sign-out")
@@ -52,6 +49,5 @@ public class MemberController {
         if (session != null) {
             session.invalidate();
         }
-        sessionManager.invalidateSession(session.getId());
     }
 }

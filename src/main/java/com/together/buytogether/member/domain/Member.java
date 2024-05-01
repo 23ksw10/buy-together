@@ -1,8 +1,8 @@
 package com.together.buytogether.member.domain;
 
-import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -34,50 +34,40 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(name = "sex", nullable = false)
     @Comment("성별")
-    private SEX sex;
+    private Gender gender;
     @Embedded
     private Address address;
 
+    @Builder
     public Member(
             String name,
             String loginId,
             String password,
             String phoneNumber,
-            SEX sex,
+            Gender gender,
             Address address) {
-        validateMember(name, loginId, password, phoneNumber, sex, address);
+        validateMember(name, loginId, password, phoneNumber, gender, address);
         this.name = name;
         this.loginId = loginId;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.sex = sex;
+        this.gender = gender;
         this.address = address;
     }
 
-    @VisibleForTesting
-    Member(Long memberId,
-           String name,
-           String loginId,
-           String password,
-           String phoneNumber,
-           SEX sex,
-           Address address) {
-        this(name, loginId, password, phoneNumber, sex, address);
-        this.memberId = memberId;
-    }
 
     private void validateMember(
             String name,
             String loginId,
             String password,
             String phoneNumber,
-            SEX sex,
+            Gender gender,
             Address address) {
         Assert.hasText(name, "이름은 필수 값입니다");
         Assert.hasText(loginId, "로그인 아이디는 필수 값입니다");
         Assert.hasText(password, "비밀번호는 필수 값입니다");
         Assert.hasText(phoneNumber, "전화번호는 필수 값입니다");
-        Assert.notNull(sex, "성별은 필수 값입니다");
+        Assert.notNull(gender, "성별은 필수 값입니다");
         Assert.notNull(address, "주소는 필수 값입니다");
     }
 

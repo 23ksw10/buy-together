@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByLoginId(String loginId);
 
+    Optional<Member> findByLoginIdAndPassword(String loginId, String password);
+
     default Member getByMemberId(Long memberId) {
         return findById(memberId).orElseThrow(
                 () -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)

@@ -12,7 +12,7 @@ public class MemberFixture {
 
     private String phoneNumber = "phoneNumber";
 
-    private SEX sex = SEX.MALE;
+    private Gender gender = Gender.MALE;
     private AddressFixture address = AddressFixture.aAddress();
 
 
@@ -45,8 +45,8 @@ public class MemberFixture {
         return this;
     }
 
-    public MemberFixture sex(SEX sex) {
-        this.sex = sex;
+    public MemberFixture sex(Gender gender) {
+        this.gender = gender;
         return this;
     }
 
@@ -57,12 +57,11 @@ public class MemberFixture {
 
     public Member build() {
         return new Member(
-                memberId,
                 name,
                 loginId,
                 password,
                 phoneNumber,
-                SEX.MALE,
+                Gender.MALE,
                 address.build()
         );
     }
