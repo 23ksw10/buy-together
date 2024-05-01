@@ -1,5 +1,7 @@
 package com.together.buytogether.member.controller;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
@@ -34,9 +36,10 @@ public class MemberController {
             @RequestBody @Valid SignInMemberDTO signInMemberDTO,
             HttpServletRequest httpServletRequest) {
         String encryptPassword = HashingUtil.encrypt(signInMemberDTO.password());
-        Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword);
+        Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_ID_PW));
         HttpSession httpSession = httpServletRequest.getSession();
-        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
+        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getLoginId());
 
     }
 
