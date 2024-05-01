@@ -57,7 +57,6 @@ public class MemberFixture {
 
     public Member build() {
         return new Member(
-                memberId,
                 name,
                 loginId,
                 password,
