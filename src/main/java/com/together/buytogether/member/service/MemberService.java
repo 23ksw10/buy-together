@@ -8,6 +8,8 @@ import com.together.buytogether.member.dto.request.RegisterMemberDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -31,8 +33,7 @@ public class MemberService {
                 });
     }
 
-    public Member signIn(String loginId, String password) {
-        return memberRepository.findByLoginIdAndPassword(loginId, password)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    public Optional<Member> signIn(String loginId, String password) {
+        return memberRepository.findByLoginIdAndPassword(loginId, password);
     }
 }
