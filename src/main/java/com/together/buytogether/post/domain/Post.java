@@ -110,7 +110,7 @@ public class Post {
 
     public void checkOwner(Long memberId) {
         if (!memberId.equals(this.member.getMemberId())) {
-            throw new IllegalArgumentException("작성자가 아닙니다");
+            throw new CustomException(ErrorCode.IS_NOT_OWNER);
         }
     }
 
@@ -123,7 +123,7 @@ public class Post {
 
     private void validateStatusWhenUpdate() {
         if (status == PostStatus.CLOSED) {
-            throw new IllegalStateException("종료된 게시글은 수정할 수 없습니다");
+            throw new CustomException(ErrorCode.POST_CLOSED);
         }
     }
 
