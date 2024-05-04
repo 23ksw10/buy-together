@@ -29,10 +29,10 @@ public class PostService {
     }
 
     @Transactional
-    public void registerPost(Long memberId, RegisterPostDTO registerPostDTO) {
+    public Post registerPost(Long memberId, RegisterPostDTO registerPostDTO) {
         Member member = commonMemberService.getMember(memberId);
         Post post = registerPostDTO.toDomain(member);
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Transactional
