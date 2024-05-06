@@ -65,4 +65,14 @@ public class PostRepositoryTest {
 
         assertThat(updatedPost).hasFieldOrPropertyWithValue("title", "newTitle");
     }
+
+    @Test
+    @DisplayName("delete 테스트")
+    void givenTestData_whenDeleting_thenWorksFine() {
+
+        Post post = postRepository.save(new Post(savedMember, "title", "content", PostStatus.OPEN, LocalDateTime.now(), 100L, 1L));
+        postRepository.delete(post);
+
+        assertThat(postRepository.count()).isEqualTo(0);
+    }
 }
