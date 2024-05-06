@@ -39,7 +39,7 @@ public class MemberController {
         Member logInMember = memberService.signIn(signInMemberDTO.loginId(), encryptPassword)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_ID_PW));
         HttpSession httpSession = httpServletRequest.getSession();
-        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getLoginId());
+        httpSession.setAttribute(SessionConst.LOGIN_MEMBER, logInMember.getMemberId());
 
     }
 
