@@ -1,6 +1,7 @@
 package com.together.buytogether.post.dto.response;
 
 
+import lombok.Builder;
 import org.springframework.util.Assert;
 
 public record PostResponseDTO(
@@ -9,6 +10,7 @@ public record PostResponseDTO(
         String title,
         String content,
         String expiredAt) {
+    @Builder
     public PostResponseDTO {
         Assert.hasText(memberName, "회원 이름은 필수 값입니다");
         Assert.notNull(postId, "글 번호는 필수 값입니다");
