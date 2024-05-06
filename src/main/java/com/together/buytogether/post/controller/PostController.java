@@ -1,13 +1,10 @@
 package com.together.buytogether.post.controller;
 
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.member.domain.SessionManager;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
 import com.together.buytogether.post.service.PostService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +15,14 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
-    private final SessionManager sessionManger;
 
     public PostController(
-            PostService postService,
-            SessionManager sessionManger) {
+            PostService postService
+    ) {
         this.postService = postService;
-        this.sessionManger = sessionManger;
     }
 
-    @PutMapping("/{postId}/update")
+    @PutMapping("/{postId}")
     public void updatePost(@SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
                            @PathVariable Long postId,
                            @Valid @RequestBody UpdatePostDTO updatePostDTO) {
@@ -37,9 +32,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void registerPost(@RequestBody @Valid RegisterPostDTO registerPostDTO,
-                             HttpServletRequest httpServletRequest) {
-        Cookie cookie = httpServletRequest.getCookies()[0];
-        Long memberId = (Long) sessionManger.getSession(cookie.getName()).getAttribute(SessionConst.LOGIN_MEMBER);
+                             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId) {
         postService.registerPost(memberId, registerPostDTO);
     }
 
