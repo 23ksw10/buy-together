@@ -3,10 +3,11 @@ package com.together.buytogether.post.dto.request;
 import com.together.buytogether.post.domain.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 public record UpdatePostDTO(
         @NotBlank(message = "글 제목은 필수입니다")
         String title,

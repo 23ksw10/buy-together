@@ -124,7 +124,7 @@ public class MemberControllerTest {
 
     @Test
     @DisplayName("로그아웃 성공")
-    public void siginOut_fail() throws Exception {
+    public void signOut_fail() throws Exception {
 
         session.setAttribute(SessionConst.LOGIN_MEMBER, "loginId");
 

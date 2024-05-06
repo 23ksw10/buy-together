@@ -1,5 +1,6 @@
 package com.together.buytogether.member.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,6 +54,12 @@ public class Member {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.address = address;
+    }
+
+
+    @VisibleForTesting
+    public void setId(Long id) {
+        this.memberId = id;
     }
 
 
