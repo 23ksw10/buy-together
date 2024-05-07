@@ -33,9 +33,9 @@ public class EnrollService {
     public void joinBuying(Long memberId, Long postId) {
         Member member = commonMemberService.getMember(memberId);
         Post post = commonPostService.getPost(postId);
-        enrollRepository.findByMemberIdAndPostId(memberId, postId).ifPresent(enroll -> {
+        if (isAlreadyEnrolled(memberId, postId)) {
             throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
-        });
+        }
         Enroll enroll = new Enroll(member, post, LocalDateTime.now());
         post.increaseJoinCount();
         enrollRepository.save(enroll);
@@ -50,4 +50,9 @@ public class EnrollService {
         post.decreaseJoinCount();
         enrollRepository.delete(enroll);
     }
+
+    private boolean isAlreadyEnrolled(Long memberId, Long postId) {
+        return enrollRepository.findByMemberIdAndPostId(memberId, postId).isPresent();
+    }
+
 }

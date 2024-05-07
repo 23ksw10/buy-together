@@ -6,6 +6,7 @@ import com.together.buytogether.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -58,6 +59,7 @@ public class Post {
     @Min(value = 0, message = "구매 참여 인원은 0명 이상이어야 합니다")
     private Long joinCount;
 
+    @Builder
     public Post(
             Member member,
             String title,

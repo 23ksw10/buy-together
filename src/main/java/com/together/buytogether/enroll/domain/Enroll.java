@@ -3,6 +3,7 @@ package com.together.buytogether.enroll.domain;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -29,6 +30,7 @@ public class Enroll {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Builder
     public Enroll(Member member, Post post, LocalDateTime createdAt) {
         this.member = member;
         this.post = post;
