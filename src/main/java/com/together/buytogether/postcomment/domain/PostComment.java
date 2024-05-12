@@ -1,5 +1,6 @@
 package com.together.buytogether.postcomment.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
@@ -7,6 +8,7 @@ import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -41,6 +43,7 @@ public class PostComment {
     @Comment("댓글 수정일")
     private LocalDateTime updatedAt;
 
+    @Builder
     public PostComment(
             Member member,
             Post post,
@@ -54,7 +57,6 @@ public class PostComment {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
     private static void validateConstructor(Member member, Post post, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
         Assert.notNull(member, "댓글 작성자는 필수입니다.");
         Assert.notNull(post, "댓글이 달린 게시글은 필수입니다.");
@@ -80,5 +82,10 @@ public class PostComment {
         checkPostStatus();
         this.content = content;
         this.updatedAt = now;
+    }
+
+    @VisibleForTesting
+    public void setCommentId(Long id) {
+        this.commentId = id;
     }
 }
