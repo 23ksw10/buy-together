@@ -5,10 +5,11 @@ import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.postcomment.domain.PostComment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 public record RegisterCommentDTO(
         @NotBlank(message = "댓글 내용은 필수입니다")
         String content,
