@@ -88,7 +88,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("로그인 - 이메일, 패스워드가 일치하는 사용자는 로그인에 성공한다")
-    public void longIn_successful() {
+    public void signIn_successful() {
         //given
         given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.of(member));
 
@@ -102,7 +102,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("로그인 - 이메일, 패스워드가 일치하지 않는 사용자는 로그인에 실패한다")
-    public void longIn_fail() {
+    public void signIn_fail() {
         //given
         given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.empty());
 
