@@ -10,7 +10,8 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
-    INVALID_ID_PW(BAD_REQUEST, "잘못된 아이디 혹은 비밀번호입니다!"),
+    INVALID_ID(BAD_REQUEST, "잘못된 아이디입니다"),
+    INVALID_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다"),
 
     /* 403 FORBIDDEN : 권한이 없는 요청  */
     IS_NOT_OWNER(UNAUTHORIZED, "작성자만 가능한 요청입니다"),
