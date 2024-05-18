@@ -10,13 +10,17 @@ public class MemberFixture {
 
     private String password = "password";
 
-    private String phoneNumber = "phoneNumber";
+    private String phoneNumber = "010-0000-0000";
 
     private Gender gender = Gender.MALE;
-    private AddressFixture address = AddressFixture.aAddress();
+    private AddressFixture addressFixture = AddressFixture.aAddress();
 
 
     public static MemberFixture aMember() {
+        return new MemberFixture();
+    }
+
+    public static MemberFixture signUpMemberDTO() {
         return new MemberFixture();
     }
 
@@ -45,24 +49,25 @@ public class MemberFixture {
         return this;
     }
 
-    public MemberFixture sex(Gender gender) {
+    public MemberFixture gender(Gender gender) {
         this.gender = gender;
         return this;
     }
 
     public MemberFixture address(AddressFixture address) {
-        this.address = address;
+        this.addressFixture = address;
         return this;
     }
 
     public Member build() {
-        return new Member(
-                name,
-                loginId,
-                password,
-                phoneNumber,
-                Gender.MALE,
-                address.build()
-        );
+        return Member.builder()
+                .name(name)
+                .loginId(loginId)
+                .password(password)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .address(addressFixture.build())
+                .build();
     }
+
 }
