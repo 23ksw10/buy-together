@@ -1,12 +1,14 @@
 package com.together.buytogether.member.domain;
 
+import com.together.buytogether.member.utils.HashingUtil;
+
 public class MemberFixture {
 
     private Long memberId = 1L;
 
     private String name = "name";
 
-    private String loginId = "loginId";
+    private String email = "ksw@gmail.com";
 
     private String password = "password";
 
@@ -34,8 +36,8 @@ public class MemberFixture {
         return this;
     }
 
-    public MemberFixture loginId(String loginId) {
-        this.loginId = loginId;
+    public MemberFixture email(String email) {
+        this.email = email;
         return this;
     }
 
@@ -62,8 +64,8 @@ public class MemberFixture {
     public Member build() {
         return Member.builder()
                 .name(name)
-                .loginId(loginId)
-                .password(password)
+                .email(email)
+                .password(HashingUtil.encrypt(password))
                 .phoneNumber(phoneNumber)
                 .gender(gender)
                 .address(addressFixture.build())
