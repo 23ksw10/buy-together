@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "enroll")
 @NoArgsConstructor
 @Comment("구매 참여")
+@EntityListeners(AuditingEntityListener.class)
 public class Enroll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +33,8 @@ public class Enroll {
     private LocalDateTime createdAt;
 
     @Builder
-    public Enroll(Member member, Post post, LocalDateTime createdAt) {
+    public Enroll(Member member, Post post) {
         this.member = member;
         this.post = post;
-        this.createdAt = createdAt;
     }
 }
