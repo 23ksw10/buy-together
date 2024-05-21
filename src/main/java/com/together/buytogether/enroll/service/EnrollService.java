@@ -11,8 +11,6 @@ import com.together.buytogether.post.domain.Post;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class EnrollService {
     private final CommonMemberService commonMemberService;
@@ -36,7 +34,7 @@ public class EnrollService {
         if (isAlreadyEnrolled(memberId, postId)) {
             throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
         }
-        Enroll enroll = new Enroll(member, post, LocalDateTime.now());
+        Enroll enroll = new Enroll(member, post);
         post.increaseJoinCount();
         enrollRepository.save(enroll);
     }
@@ -44,9 +42,7 @@ public class EnrollService {
     @Transactional
     public void cancelBuying(Long memberId, Long postId) {
         Post post = commonPostService.getPost(postId);
-        Enroll enroll = enrollRepository.findByMemberIdAndPostId(memberId, postId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.ENROLL_NOT_FOUND);
-        });
+        Enroll enroll = enrollRepository.getEnroll(memberId, postId);
         post.decreaseJoinCount();
         enrollRepository.delete(enroll);
     }
