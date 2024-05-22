@@ -3,7 +3,7 @@ package com.together.buytogether.member.domain;
 import com.together.buytogether.member.dto.request.SignInMemberDTO;
 
 public class SignInMemberDTOFixture {
-    private String loginId = "loginId";
+    private String email = "ksw@gmail.com";
     private String password = "password";
 
     public static SignInMemberDTOFixture aSignInMemberDTO() {
@@ -11,8 +11,8 @@ public class SignInMemberDTOFixture {
     }
 
 
-    public SignInMemberDTOFixture loginId(String loginId) {
-        this.loginId = loginId;
+    public SignInMemberDTOFixture email(String email) {
+        this.email = email;
         return this;
     }
 
@@ -23,7 +23,7 @@ public class SignInMemberDTOFixture {
 
     public SignInMemberDTO build() {
         return SignInMemberDTO.builder()
-                .loginId(loginId)
+                .email(email)
                 .password(password)
                 .build();
     }
