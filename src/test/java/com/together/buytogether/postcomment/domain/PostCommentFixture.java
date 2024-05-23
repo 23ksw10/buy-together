@@ -1,29 +1,28 @@
 package com.together.buytogether.postcomment.domain;
 
+import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberFixture;
+import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostFixture;
 
-import java.time.LocalDateTime;
-
 public class PostCommentFixture {
-    private MemberFixture memberFixture = MemberFixture.aMember();
-    private PostFixture postFixture = PostFixture.aPost();
+    private Member member = MemberFixture.aMember().build();
+    private Post post = PostFixture.aPost().build();
     private Long commentId = 1L;
-    private String content = "댓글 내용";
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private String content = "content";
+
 
     public static PostCommentFixture aPostComment() {
         return new PostCommentFixture();
     }
 
-    public PostCommentFixture memberFixture(MemberFixture memberFixture) {
-        this.memberFixture = memberFixture;
+    public PostCommentFixture member(Member member) {
+        this.member = member;
         return this;
     }
 
-    public PostCommentFixture postFixture(PostFixture postFixture) {
-        this.postFixture = postFixture;
+    public PostCommentFixture post(Post post) {
+        this.post = post;
         return this;
     }
 
@@ -37,23 +36,12 @@ public class PostCommentFixture {
         return this;
     }
 
-    public PostCommentFixture createdAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public PostCommentFixture updatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
 
     public PostComment build() {
         return new PostComment(
-                memberFixture.build(),
-                postFixture.build(),
-                content,
-                createdAt,
-                updatedAt
+                member,
+                post,
+                content
         );
     }
 }
