@@ -2,7 +2,6 @@ package com.together.buytogether.member.service;
 
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
-import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
@@ -17,6 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.together.buytogether.member.domain.MemberFixture.aMember;
+import static com.together.buytogether.member.domain.RegisterMemberDTOFixture.aRegisterMemberDTO;
+import static com.together.buytogether.member.domain.SignInMemberDTOFixture.aSignInMemberDTO;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,13 +31,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
-    private final String NAME = "name";
-    private final String LOGIN_ID = "loginId";
-    private final String PASSWORD = "password";
-    private final String PHONE_NUMBER = "010-0000-0000";
-    private final Gender GENDER = Gender.MALE;
-    private final String ADDRESS = "경기도 고양시 덕양구 화정로 27";
-    private final String DETAIL_ADDRESS = "625동 1004호";
     @Mock
     private MemberRepository memberRepository;
     @InjectMocks
@@ -46,92 +42,89 @@ public class MemberServiceTest {
 
     @BeforeEach
     public void setUp() {
-        registerMemberDTO = createMember();
-        member = registerMemberDTO.toDomain();
-        signInMemberDTO = signInRequest();
+        registerMemberDTO = aRegisterMemberDTO().build();
+        member = aMember().build();
+        signInMemberDTO = aSignInMemberDTO().build();
     }
 
     @Test
     @DisplayName("회원가입에 성공한다")
-    public void signUp_successful() {
+    public void registerMemberSuccess() {
         //given
-        given(memberRepository.findByLoginId(registerMemberDTO.loginId())).willReturn(Optional.empty());
+        given(memberRepository.findByEmail(registerMemberDTO.email())).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class))).willReturn(registerMemberDTO.toDomain());
 
         //when
         memberService.registerMember(registerMemberDTO);
 
         //then
-        then(memberRepository).should().findByLoginId(registerMemberDTO.loginId());
+        then(memberRepository).should().findByEmail(registerMemberDTO.email());
         then(memberRepository).should().save(any(Member.class));
 
         //verify
-        verify(memberRepository, times(1)).findByLoginId(registerMemberDTO.loginId());
+        verify(memberRepository, times(1)).findByEmail(registerMemberDTO.email());
         verify(memberRepository, times(1)).save(any(Member.class));
     }
 
     @Test
-    @DisplayName("아이디 중복은 회원가입에 실패한다")
-    public void loginIdDuplicated_registerMember_failure() {
+    @DisplayName("이메일 중복은 회원가입에 실패한다")
+    public void duplicatedEmailRegisterMemberFail() {
         //given
-        given(memberRepository.findByLoginId(LOGIN_ID)).willReturn(Optional.of(member));
+        given(memberRepository.findByEmail(member.getEmail())).willReturn(Optional.of(member));
 
         //when
         CustomException ex = assertThrows(CustomException.class, () -> memberService.registerMember(registerMemberDTO));
 
         //then
         assertEquals(ex.getErrorCode(), ErrorCode.MEMBER_ALREADY_EXIST);
-        then(memberRepository).should().findByLoginId(LOGIN_ID);
+        then(memberRepository).should().findByEmail(member.getEmail());
         then(memberRepository).shouldHaveNoMoreInteractions();
 
     }
 
     @Test
     @DisplayName("로그인 - 이메일, 패스워드가 일치하는 사용자는 로그인에 성공한다")
-    public void longIn_successful() {
+    public void signInSuccess() {
         //given
-        given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.of(member));
+        given(memberRepository.findByEmail(signInMemberDTO.email())).willReturn(Optional.of(member));
 
         //when
-        memberService.signIn(signInMemberDTO.loginId(), signInMemberDTO.password());
+        memberService.signIn(signInMemberDTO.email(), signInMemberDTO.password());
 
         //then
-        then(memberRepository).should().findByLoginIdAndPassword(LOGIN_ID, PASSWORD);
+        then(memberRepository).should().findByEmail(member.getEmail());
 
     }
 
     @Test
-    @DisplayName("로그인 - 이메일, 패스워드가 일치하지 않는 사용자는 로그인에 실패한다")
-    public void longIn_fail() {
+    @DisplayName("로그인 - 이메일이 일치하지 않는 사용자는 로그인에 실패한다")
+    public void invalidEmailSignInFail() {
         //given
-        given(memberRepository.findByLoginIdAndPassword(LOGIN_ID, PASSWORD)).willReturn(Optional.empty());
+        given(memberRepository.findByEmail(signInMemberDTO.email())).willReturn(Optional.empty());
 
         //when
-        assertThrows(CustomException.class, () -> memberService.signIn(signInMemberDTO.loginId(), signInMemberDTO.password()));
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            memberService.signIn(signInMemberDTO.email(), signInMemberDTO.password());
+        });
 
         //then
-        then(memberRepository).should().findByLoginIdAndPassword(LOGIN_ID, PASSWORD);
-
-
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_EMAIL);
     }
 
-    private RegisterMemberDTO createMember() {
-        return RegisterMemberDTO.builder()
-                .name(NAME)
-                .loginId(LOGIN_ID)
-                .password(PASSWORD)
-                .phoneNumber(PHONE_NUMBER)
-                .gender(GENDER)
-                .address(ADDRESS)
-                .detailAddress(DETAIL_ADDRESS)
-                .build();
-    }
+    @Test
+    @DisplayName("로그인 - 패스워드가 일치하지 않는 사용자는 로그인에 실패한다")
+    public void invalidPasswordSignInFail() {
+        //given
+        SignInMemberDTO wrongPasswordRequest = aSignInMemberDTO().password("wrong-password").build();
+        given(memberRepository.findByEmail(wrongPasswordRequest.email())).willReturn(Optional.of(member));
 
-    private SignInMemberDTO signInRequest() {
-        return SignInMemberDTO.builder()
-                .loginId(LOGIN_ID)
-                .password(PASSWORD)
-                .build();
+        //when
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            memberService.signIn(wrongPasswordRequest.email(), wrongPasswordRequest.password());
+        });
+
+        //then
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_PASSWORD);
     }
 
 }

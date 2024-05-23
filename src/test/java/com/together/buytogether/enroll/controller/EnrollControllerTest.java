@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@DisplayName("Enroll Controller 테스트")
 @WebMvcTest(controllers = EnrollController.class)
 public class EnrollControllerTest {
 
@@ -38,7 +38,7 @@ public class EnrollControllerTest {
 
     @Test
     @DisplayName("구매에 참여할 수 있다")
-    void givenValidData_whenJoiningBuying_thenSuccessful() throws Exception {
+    void joinBuying() throws Exception {
         mockMvc.perform(post("/posts/{postId}/enrolls", postId)
                         .session(mockSession))
                 .andExpect(status().is2xxSuccessful())
@@ -50,7 +50,7 @@ public class EnrollControllerTest {
 
     @Test
     @DisplayName("구매를 취소할 수 있다")
-    void givenValidData_whenCancelingBuying_thenSuccessful() throws Exception {
+    void cancelBuying() throws Exception {
         mockMvc.perform(delete("/posts/{postId}/enrolls", postId)
                         .session(mockSession))
                 .andExpect(status().is2xxSuccessful())

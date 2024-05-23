@@ -8,8 +8,7 @@ import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.postcomment.domain.PostComment;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
-import com.together.buytogether.postcomment.dto.request.RegisterCommentDTO;
-import com.together.buytogether.postcomment.dto.request.UpdateCommentDTO;
+import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +32,10 @@ public class PostCommentService {
     }
 
     @Transactional
-    public void registerComment(Long memberId, Long postId, RegisterCommentDTO registerCommentDTO) {
+    public void registerComment(Long memberId, Long postId, CommentDTO commentDTO) {
         Member member = commonMemberService.getMember(memberId);
         Post post = commonPostService.getPost(postId);
-        PostComment postComment = registerCommentDTO.toDomain(member, post);
+        PostComment postComment = commentDTO.toDomain(member, post);
         postCommentRepository.save(postComment);
     }
 
@@ -69,11 +68,11 @@ public class PostCommentService {
     }
 
     @Transactional
-    public void updateComment(Long memberId, Long commentId, UpdateCommentDTO updateCommentDTO) {
+    public void updateComment(Long memberId, Long commentId, CommentDTO commentDTO) {
         PostComment postComment = postCommentRepository.getByCommentId(commentId);
         checkOwner(memberId, postComment);
         postComment.update(
-                updateCommentDTO.content(),
+                commentDTO.content(),
                 LocalDateTime.now());
     }
 

@@ -1,8 +1,7 @@
 package com.together.buytogether.postcomment.controller;
 
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.postcomment.dto.request.RegisterCommentDTO;
-import com.together.buytogether.postcomment.dto.request.UpdateCommentDTO;
+import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
 import com.together.buytogether.postcomment.service.PostCommentService;
 import jakarta.validation.Valid;
@@ -42,15 +41,15 @@ public class PostCommentController {
     public void registerComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId,
-            @RequestBody @Valid RegisterCommentDTO registerCommentDTO) {
-        postCommentService.registerComment(memberId, postId, registerCommentDTO);
+            @RequestBody @Valid CommentDTO commentDTO) {
+        postCommentService.registerComment(memberId, postId, commentDTO);
     }
 
     @PutMapping("/{commentId}")
     public void updateComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable @Valid Long commentId,
-            @RequestBody @Valid UpdateCommentDTO updateCommentDTO) {
-        postCommentService.updateComment(memberId, commentId, updateCommentDTO);
+            @RequestBody @Valid CommentDTO commentDTO) {
+        postCommentService.updateComment(memberId, commentId, commentDTO);
     }
 }

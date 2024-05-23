@@ -27,7 +27,7 @@ public class PostCommentTest {
     @DisplayName("댓글 수정 - 게시글 상태가 CLOSED일 경우 예외가 발생한다")
     void fail_invalid_status_post_status_updateComment() {
         PostFixture postFixture = PostFixture.aPost().status(PostStatus.CLOSED);
-        PostComment postComment = PostCommentFixture.aPostComment().postFixture(postFixture).build();
+        PostComment postComment = PostCommentFixture.aPostComment().post(postFixture.build()).build();
         LocalDateTime updateDate = LocalDateTime.now();
         assertThatThrownBy(() -> {
             postComment.update("댓글 수정", updateDate);

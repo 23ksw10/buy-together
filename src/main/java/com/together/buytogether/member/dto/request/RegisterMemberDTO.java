@@ -13,7 +13,7 @@ public record RegisterMemberDTO(
         @NotBlank(message = "이름은 필수 값입니다")
         String name,
         @NotBlank(message = "로그인 아이디는 필수 값입니다")
-        String loginId,
+        String email,
         @NotBlank(message = "비밀번호는 필수 값입니다")
         String password,
         @NotBlank(message = "전화번호는 필수 값입니다")
@@ -28,7 +28,7 @@ public record RegisterMemberDTO(
     public Member toDomain() {
         return new Member(
                 name,
-                loginId,
+                email,
                 HashingUtil.encrypt(password),
                 phoneNumber,
                 gender,

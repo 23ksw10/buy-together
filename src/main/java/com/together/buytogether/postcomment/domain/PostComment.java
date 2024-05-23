@@ -12,6 +12,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import java.time.LocalDateTime;
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Comment("댓글")
+@EntityListeners(AuditingEntityListener.class)
 public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +40,11 @@ public class PostComment {
     @Column(name = "content", nullable = false)
     @Comment("댓글 내용")
     private String content;
+    @CreatedDate
     @Column(name = "created_at", nullable = false)
     @Comment("댓글 생성일")
     private LocalDateTime createdAt;
+    @LastModifiedDate
     @Column(name = "update_at", nullable = false)
     @Comment("댓글 수정일")
     private LocalDateTime updatedAt;
@@ -47,25 +53,19 @@ public class PostComment {
     public PostComment(
             Member member,
             Post post,
-            String content,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
-        validateConstructor(member, post, content, createdAt, updatedAt);
+            String content
+    ) {
+        validateConstructor(member, post, content);
         this.member = member;
         this.post = post;
         this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
     }
-    private static void validateConstructor(Member member, Post post, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
+    private static void validateConstructor(Member member, Post post, String content) {
         Assert.notNull(member, "댓글 작성자는 필수입니다.");
         Assert.notNull(post, "댓글이 달린 게시글은 필수입니다.");
         Assert.hasText(content, "댓글 내용은 필수입니다.");
-        Assert.notNull(createdAt, "댓글 생성일은 필수입니다.");
-        Assert.notNull(updatedAt, "댓글 수정일은 필수입니다.");
-        if (createdAt.isAfter(updatedAt)) {
-            throw new IllegalArgumentException("댓글 생성일은 수정일보다 빠를 수 없습니다.");
-        }
     }
 
     public boolean checkOwner(Long memberId) {

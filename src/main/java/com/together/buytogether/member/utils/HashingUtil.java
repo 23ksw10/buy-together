@@ -22,7 +22,7 @@ public class HashingUtil {
     private static String byteToHex(byte[] digest) {
         StringBuilder sb = new StringBuilder();
         for (byte d : digest) {
-            sb.append(String.format("02x", d));
+            sb.append(String.format("%02x", d));
         }
         return sb.toString();
     }

@@ -2,7 +2,6 @@ package com.together.buytogether.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.post.domain.PostStatus;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
@@ -17,8 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-
+import static com.together.buytogether.post.domain.PostResponseDTOFixture.aPostResponseDTO;
+import static com.together.buytogether.post.domain.RegisterPostDTOFixture.aRegisterPostDTO;
+import static com.together.buytogether.post.domain.UpdatePostDTOFixture.aUpdatePostDTO;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,8 +50,8 @@ public class PostControllerTest {
 
     @Test
     @DisplayName("게시글을 등록할 수 있다")
-    void givenValidData_whenRegisteringPost_then200() throws Exception {
-        RegisterPostDTO registerPostDTO = createRegisterPostDto();
+    void registerPost() throws Exception {
+        RegisterPostDTO registerPostDTO = aRegisterPostDTO().build();
 
         mockMvc.perform(post("/posts")
                         .content(objectMapper.writeValueAsString(registerPostDTO))
@@ -66,8 +66,8 @@ public class PostControllerTest {
 
     @Test
     @DisplayName("게시글을 업데이트할 수 있다")
-    void givenValidData_whenUpdatingPost_then200() throws Exception {
-        UpdatePostDTO updatePostDTO = createUpdatePostDto();
+    void updatePost() throws Exception {
+        UpdatePostDTO updatePostDTO = aUpdatePostDTO().build();
 
         mockMvc.perform(put("/posts/{postId}", postId)
                         .content(objectMapper.writeValueAsString(updatePostDTO))
@@ -80,8 +80,8 @@ public class PostControllerTest {
 
     @Test
     @DisplayName("게시글을 조회할 수 있다")
-    void whenRetrievingPost_thenSuccessful() throws Exception {
-        PostResponseDTO postResponseDTO = createPostResponseDTO();
+    void getPost() throws Exception {
+        PostResponseDTO postResponseDTO = aPostResponseDTO().build();
         given(postService.getPost(postId)).willReturn(postResponseDTO);
 
         mockMvc.perform(get("/posts/{postId}", postId))
@@ -95,7 +95,7 @@ public class PostControllerTest {
 
     @Test
     @DisplayName("게시글을 삭제할 수 있다")
-    void givenPostIdAndMemberId_whenDeletingPost_thenSuccessfullyDeleted() throws Exception {
+    void deletePost() throws Exception {
 
 
         mockMvc.perform(delete("/posts/{postId}", postId)
@@ -108,34 +108,5 @@ public class PostControllerTest {
         then(postService).should().deletePost(memberId, postId);
     }
 
-    private PostResponseDTO createPostResponseDTO() {
-        return PostResponseDTO.builder()
-                .memberName("작성자 이름")
-                .postId(1L)
-                .title("제목")
-                .content("내용")
-                .expiredAt("2023-06-07T10:00:00")
-                .build();
-    }
 
-    private RegisterPostDTO createRegisterPostDto() {
-        return RegisterPostDTO.builder()
-                .title("title")
-                .content("content")
-                .status(PostStatus.OPEN)
-                .expiredAt(LocalDateTime.now())
-                .maxJoinCount(100L)
-                .joinCount(1L)
-                .build();
-    }
-
-    private UpdatePostDTO createUpdatePostDto() {
-        return UpdatePostDTO.builder()
-                .title("newTitle")
-                .content("newContent")
-                .status(PostStatus.CLOSED)
-                .expiredAt(LocalDateTime.now())
-                .maxJoinCount(100L)
-                .build();
-    }
 }
