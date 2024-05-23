@@ -1,25 +1,26 @@
 package com.together.buytogether.post.repository;
 
-import com.together.buytogether.member.domain.Address;
-import com.together.buytogether.member.domain.Gender;
+import com.together.buytogether.config.JpaAuditingConfig;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
-import com.together.buytogether.post.domain.PostStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.together.buytogether.member.domain.MemberFixture.aMember;
+import static com.together.buytogether.post.domain.PostFixture.aPost;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Post JPA 연결 테스트")
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 public class PostRepositoryTest {
     Member savedMember;
     @Autowired
@@ -27,52 +28,50 @@ public class PostRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    private Post post;
+
     @BeforeEach
     void setUp() {
-        Member member = Member.builder()
-                .name("name")
-                .loginId("loginId")
-                .password("password")
-                .gender(Gender.MALE)
-                .phoneNumber("010-0000-0000")
-                .address(new Address("경기도", "고양시")).build();
+        Member member = aMember().build();
         savedMember = memberRepository.save(member);
+        post = aPost().member(member).build();
     }
 
     @Test
     @DisplayName("insert 테스트")
-    void givenTestData_whenInserting_thenWorksFine() {
-        Post post = postRepository.save(new Post(savedMember, "title", "content", PostStatus.OPEN, LocalDateTime.now(), 100L, 1L));
+    void insertPost() {
+        postRepository.save(post);
         assertThat(postRepository.count()).isEqualTo(1);
     }
 
 
     @Test
     @DisplayName("select 테스트")
-    void givenTestData_whenSelecting_thenWorksFine() {
-        postRepository.save(new Post(savedMember, "title", "content", PostStatus.OPEN, LocalDateTime.now(), 100L, 1L));
+    void selectPost() {
+        postRepository.save(post);
         List<Post> posts = postRepository.findAll();
         assertThat(posts).isNotNull().hasSize(1);
     }
 
     @Test
     @DisplayName("update 테스트")
-    void givenTestData_whenUpdating_thenWorksFine() {
+    void updatePost() {
 
-        Post post = postRepository.save(new Post(savedMember, "title", "content", PostStatus.OPEN, LocalDateTime.now(), 100L, 1L));
-        post.update("newTitle", post.getContent(), post.getStatus(), post.getExpiredAt(), post.getMaxJoinCount());
-        Post updatedPost = postRepository.saveAndFlush(post);
+        Post savedPost = postRepository.save(post);
+        savedPost.update("newTitle", post.getContent(), post.getStatus(), post.getExpiredAt(), post.getMaxJoinCount());
+        Post updatedPost = postRepository.saveAndFlush(savedPost);
 
         assertThat(updatedPost).hasFieldOrPropertyWithValue("title", "newTitle");
     }
 
     @Test
     @DisplayName("delete 테스트")
-    void givenTestData_whenDeleting_thenWorksFine() {
+    void deletePost() {
 
-        Post post = postRepository.save(new Post(savedMember, "title", "content", PostStatus.OPEN, LocalDateTime.now(), 100L, 1L));
+        postRepository.save(post);
+        assertThat(postRepository.count()).isEqualTo(1);
+
         postRepository.delete(post);
-
         assertThat(postRepository.count()).isEqualTo(0);
     }
 }
