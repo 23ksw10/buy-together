@@ -1,28 +1,27 @@
 package com.together.buytogether.enroll.repository;
 
+import com.together.buytogether.config.JpaAuditingConfig;
 import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
-import com.together.buytogether.member.domain.Address;
-import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
-import com.together.buytogether.post.domain.PostStatus;
-import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
+import static com.together.buytogether.enroll.domain.EnrollFixture.aEnroll;
+import static com.together.buytogether.member.domain.MemberFixture.aMember;
+import static com.together.buytogether.post.domain.PostFixture.aPost;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Enroll JPA 연결 테스트")
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 public class EnrollRepositoryTest {
 
     @Autowired
@@ -36,23 +35,23 @@ public class EnrollRepositoryTest {
 
     Member member;
     Post post;
+    Member savedMember;
+    Post savedPost;
+
+    Enroll enroll;
 
     @BeforeEach
     void setUp() {
-        member = createMember();
-        memberRepository.save(member);
-        post = createPostDto().toDomain(member);
-        postRepository.save(post);
+        member = aMember().build();
+        savedMember = memberRepository.save(member);
+        post = aPost().member(member).build();
+        savedPost = postRepository.save(post);
+        enroll = aEnroll().member(member).post(post).build();
     }
 
     @Test
     @DisplayName("insert 테스트")
-    public void givenValidEnroll_whenSaving_thenSaveSuccessfully() {
-        Enroll enroll = Enroll.builder()
-                .member(member)
-                .post(post)
-                .createdAt(LocalDateTime.now())
-                .build();
+    public void insertEnroll() {
 
         // when
         Enroll savedEnroll = enrollRepository.save(enroll);
@@ -66,12 +65,8 @@ public class EnrollRepositoryTest {
 
     @Test
     @DisplayName("delete 테스트")
-    public void givenValidEnroll_whenDeleting_thenDeleteSuccessfully() {
-        Enroll enroll = Enroll.builder()
-                .member(member)
-                .post(post)
-                .createdAt(LocalDateTime.now())
-                .build();
+    public void deleteEnroll() {
+
         Enroll savedEnroll = enrollRepository.save(enroll);
         // when
         enrollRepository.delete(savedEnroll);
@@ -83,45 +78,18 @@ public class EnrollRepositoryTest {
 
     @Test
     @DisplayName("select 테스트")
-    public void givenMemberIdAndPostId_whenSelecting_thenSelectSuccessfully() {
-        Enroll enroll = Enroll.builder()
-                .member(member)
-                .post(post)
-                .createdAt(LocalDateTime.now())
-                .build();
-        enrollRepository.save(enroll);
+    public void selectEnroll() {
+
+        enrollRepository.saveAndFlush(enroll);
 
         // when
-        Optional<Enroll> foundEnroll = enrollRepository.findByMemberIdAndPostId(1L, 1L);
+        Enroll foundEnroll = enrollRepository.getEnroll(savedMember.getMemberId(), savedPost.getPostId());
 
         // then
-        assertThat(foundEnroll).isPresent();
-        assertThat(foundEnroll.get().getMember()).isEqualTo(member);
-        assertThat(foundEnroll.get().getPost()).isEqualTo(post);
+        assertThat(foundEnroll).isNotNull();
+        assertThat(foundEnroll.getMember()).isEqualTo(savedMember);
+        assertThat(foundEnroll.getPost()).isEqualTo(savedPost);
 
     }
 
-
-    private Member createMember() {
-        return Member.builder()
-                .name("name")
-                .password("test")
-                .phoneNumber("010-0000-0000")
-                .gender(Gender.MALE)
-                .loginId("test-id")
-                .address(new Address("경기도", "고양시"))
-                .build();
-    }
-
-
-    private RegisterPostDTO createPostDto() {
-        return RegisterPostDTO.builder()
-                .title("title")
-                .content("content")
-                .maxJoinCount(100L)
-                .joinCount(1L)
-                .status(PostStatus.OPEN)
-                .expiredAt(LocalDateTime.now())
-                .build();
-    }
 }
