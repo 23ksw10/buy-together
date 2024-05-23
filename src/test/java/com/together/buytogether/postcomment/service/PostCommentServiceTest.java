@@ -2,16 +2,11 @@ package com.together.buytogether.postcomment.service;
 
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonPostService;
-import com.together.buytogether.member.domain.Address;
-import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostStatus;
-import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.postcomment.domain.PostComment;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
-import com.together.buytogether.postcomment.dto.request.RegisterCommentDTO;
-import com.together.buytogether.postcomment.dto.request.UpdateCommentDTO;
+import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-
+import static com.together.buytogether.member.domain.MemberFixture.aMember;
+import static com.together.buytogether.post.domain.PostFixture.aPost;
+import static com.together.buytogether.postcomment.domain.PostCommentFixture.aPostComment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.refEq;
@@ -47,7 +43,7 @@ public class PostCommentServiceTest {
     Long commentId;
     Member member;
     Post post;
-    RegisterCommentDTO registerCommentDTO;
+    CommentDTO commentDTO;
     PostComment postComment;
 
     @BeforeEach
@@ -55,16 +51,16 @@ public class PostCommentServiceTest {
         memberId = 1L;
         postId = 1L;
         commentId = 1L;
-        member = createMember();
+        member = aMember().build();
         member.setId(memberId);
-        post = createPostDto().toDomain(member);
-        registerCommentDTO = createRegisterCommentDTO();
-        postComment = registerCommentDTO.toDomain(member, post);
+        post = aPost().member(member).build();
+        commentDTO = new CommentDTO("content");
+        postComment = aPostComment().member(member).post(post).build();
     }
 
     @Test
     @DisplayName("게시글에 댓글을 등록할 수 있다")
-    void givenValidData_whenRegisteringComment_thenSuccessful() {
+    void registerCommentSuccess() {
         //given
 
         given(commonMemberService.getMember(memberId)).willReturn(member);
@@ -72,7 +68,7 @@ public class PostCommentServiceTest {
         given(postCommentRepository.save(any(PostComment.class))).willReturn(postComment);
 
         //when
-        postCommentService.registerComment(memberId, postId, registerCommentDTO);
+        postCommentService.registerComment(memberId, postId, commentDTO);
 
         //then
         then(postCommentRepository).should().save(refEq(postComment));
@@ -80,17 +76,15 @@ public class PostCommentServiceTest {
 
     @Test
     @DisplayName("게시글에 댓글을 수정할 수 있다")
-    void givenValidData_whenUpdatingComment_thenSuccessful() {
+    void updateCommentSuccess() {
         //given
         postComment.setCommentId(commentId);
-        UpdateCommentDTO updateCommentDTO = UpdateCommentDTO.builder()
-                .content("update-content")
-                .build();
+        CommentDTO commentDTO = new CommentDTO("update-content");
 
         given(postCommentRepository.getByCommentId(commentId)).willReturn(postComment);
 
         //when
-        postCommentService.updateComment(memberId, commentId, updateCommentDTO);
+        postCommentService.updateComment(memberId, commentId, commentDTO);
 
 
         //then
@@ -99,7 +93,7 @@ public class PostCommentServiceTest {
 
     @Test
     @DisplayName("댓글 삭제 성공")
-    public void givenValidData_whenDeletingComment_thenSuccessful() {
+    public void deleteCommentSuccess() {
         given(postCommentRepository.getByCommentId(commentId))
                 .willReturn(postComment);
 
@@ -108,34 +102,4 @@ public class PostCommentServiceTest {
         then(postCommentRepository).should().delete(refEq(postComment));
     }
 
-
-    private Member createMember() {
-        return Member.builder()
-                .name("name")
-                .password("test")
-                .phoneNumber("010-0000-0000")
-                .gender(Gender.MALE)
-                .loginId("test-id")
-                .address(new Address("경기도", "고양시"))
-                .build();
-    }
-
-    private RegisterPostDTO createPostDto() {
-        return RegisterPostDTO.builder()
-                .title("title")
-                .content("content")
-                .maxJoinCount(100L)
-                .joinCount(1L)
-                .status(PostStatus.OPEN)
-                .expiredAt(LocalDateTime.now())
-                .build();
-    }
-
-    private RegisterCommentDTO createRegisterCommentDTO() {
-        return RegisterCommentDTO.builder()
-                .content("content")
-                .createAt(LocalDateTime.now())
-                .updateAt(LocalDateTime.now())
-                .build();
-    }
 }
