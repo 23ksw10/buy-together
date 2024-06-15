@@ -1,4 +1,4 @@
-package com.together.buytogether.member.utils;
+package com.together.buytogether.common.utils;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,16 +10,16 @@ public class ResponseDTO<T> {
     private final T data;
     private final String message;
 
-    public static <T> ResponseDTO successResult(T data) {
-        return ResponseDTO.builder()
+    public static <T> ResponseDTO<T> successResult(T data) {
+        return ResponseDTO.<T>builder()
                 .status(Status.SUCCESS)
                 .data(data)
                 .message("Request Success")
                 .build();
     }
 
-    public static <T> ResponseDTO failResult(T data) {
-        return ResponseDTO.builder()
+    public static <T> ResponseDTO<T> failResult(T data) {
+        return ResponseDTO.<T>builder()
                 .status(Status.FAIL)
                 .data(null)
                 .message("Request Fail")
