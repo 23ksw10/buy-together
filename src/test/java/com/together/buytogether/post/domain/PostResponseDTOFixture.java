@@ -10,7 +10,7 @@ public class PostResponseDTOFixture {
     Long postId = 1L;
     String title = "제목";
     String content = "내용";
-    String expiredAt = LocalDateTime.now().toString();
+    LocalDateTime expiredAt = LocalDateTime.now();
 
     public static PostResponseDTOFixture aPostResponseDTO() {
         return new PostResponseDTOFixture();
@@ -36,7 +36,7 @@ public class PostResponseDTOFixture {
         return this;
     }
 
-    public PostResponseDTOFixture expiredAt(String expiredAt) {
+    public PostResponseDTOFixture expiredAt(LocalDateTime expiredAt) {
         this.expiredAt = expiredAt;
         return this;
     }

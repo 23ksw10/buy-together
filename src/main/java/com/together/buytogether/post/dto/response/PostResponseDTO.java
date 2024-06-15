@@ -4,12 +4,14 @@ package com.together.buytogether.post.dto.response;
 import lombok.Builder;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
+
 public record PostResponseDTO(
         String memberName,
         Long postId,
         String title,
         String content,
-        String expiredAt) {
+        LocalDateTime expiredAt) {
     @Builder
     public PostResponseDTO {
         Assert.hasText(memberName, "회원 이름은 필수 값입니다");
