@@ -1,7 +1,9 @@
 package com.together.buytogether.postcomment.dto.response;
 
+import lombok.Builder;
 import org.springframework.util.Assert;
 
+@Builder
 public record CommentResponseDTO(
         Long commentId,
         Long postId,
