@@ -1,12 +1,14 @@
 package com.together.buytogether.member.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
+import org.springframework.util.Assert;
 
 @Builder
 public record SignInMemberResponseDTO(
-        @NotBlank(message = "이메일은 필수 값입니다")
         String email,
-        @NotBlank(message = "이름은 필수 값입니다")
         String name) {
+    public SignInMemberResponseDTO {
+        Assert.hasText(name, "이름은 필수 값입니다.");
+        Assert.hasText(email, "이메일은 필수 값입니다.");
+    }
 }
