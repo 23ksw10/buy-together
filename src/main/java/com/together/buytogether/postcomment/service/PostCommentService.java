@@ -4,12 +4,14 @@ import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonPostService;
+import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.postcomment.domain.PostComment;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
 import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
+import com.together.buytogether.postcomment.dto.response.UpdateCommentResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,30 +34,38 @@ public class PostCommentService {
     }
 
     @Transactional
-    public void registerComment(Long memberId, Long postId, CommentDTO commentDTO) {
+    public ResponseDTO<CommentResponseDTO> registerComment(Long memberId, Long postId, CommentDTO commentDTO) {
         Member member = commonMemberService.getMember(memberId);
         Post post = commonPostService.getPost(postId);
         PostComment postComment = commentDTO.toDomain(member, post);
-        postCommentRepository.save(postComment);
+        PostComment savedComment = postCommentRepository.save(postComment);
+        return ResponseDTO.successResult(CommentResponseDTO.builder()
+                .commentId(savedComment.getCommentId())
+                .postId(savedComment.getPost().getPostId())
+                .content(savedComment.getContent())
+                .memberName(savedComment.getMember().getName())
+                .createdAt(savedComment.getCreatedAt().toString())
+                .updatedAt(savedComment.getUpdatedAt().toString())
+                .build());
     }
 
     @Transactional(readOnly = true)
-    public CommentResponseDTO getPostComment(Long commentId) {
+    public ResponseDTO<CommentResponseDTO> getPostComment(Long commentId) {
         PostComment postComment = postCommentRepository.getByCommentId(commentId);
-        return new CommentResponseDTO(
-                postComment.getCommentId(),
-                postComment.getPost().getPostId(),
-                postComment.getMember().getName(),
-                postComment.getContent(),
-                postComment.getCreatedAt().toString(),
-                postComment.getUpdatedAt().toString()
-        );
+        return ResponseDTO.successResult(CommentResponseDTO.builder()
+                .commentId(postComment.getCommentId())
+                .postId(postComment.getPost().getPostId())
+                .content(postComment.getContent())
+                .memberName(postComment.getMember().getName())
+                .createdAt(postComment.getCreatedAt().toString())
+                .updatedAt(postComment.getUpdatedAt().toString())
+                .build());
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDTO> getPostComments(Long postId) {
+    public ResponseDTO<List<CommentResponseDTO>> getPostComments(Long postId) {
         List<PostComment> comments = postCommentRepository.findAllByPostId(postId);
-        return comments.stream()
+        List<CommentResponseDTO> commentsResponse = comments.stream()
                 .map(c -> new CommentResponseDTO(
                         c.getCommentId(),
                         c.getPost().getPostId(),
@@ -65,22 +75,31 @@ public class PostCommentService {
                         c.getUpdatedAt().toString()
                 ))
                 .toList();
+        return ResponseDTO.successResult(commentsResponse);
     }
 
     @Transactional
-    public void updateComment(Long memberId, Long commentId, CommentDTO commentDTO) {
+    public ResponseDTO<UpdateCommentResponseDTO> updateComment(Long memberId, Long commentId, CommentDTO commentDTO) {
         PostComment postComment = postCommentRepository.getByCommentId(commentId);
         checkOwner(memberId, postComment);
         postComment.update(
                 commentDTO.content(),
                 LocalDateTime.now());
+        return ResponseDTO.successResult(UpdateCommentResponseDTO.builder()
+                .commentId(postComment.getCommentId())
+                .postId(postComment.getPost().getPostId())
+                .currentContent(postComment.getContent())
+                .memberName(postComment.getMember().getName())
+                .updatedAt(postComment.getUpdatedAt().toString())
+                .build());
     }
 
     @Transactional
-    public void deleteComment(Long memberId, Long commentId) {
+    public ResponseDTO<String> deleteComment(Long memberId, Long commentId) {
         PostComment postComment = postCommentRepository.getByCommentId(commentId);
         checkOwner(memberId, postComment);
         postCommentRepository.delete(postComment);
+        return ResponseDTO.successResult("성공적으로 댓글을 삭제했습니다");
     }
 
     public void checkOwner(Long memberId, PostComment postComment) {
