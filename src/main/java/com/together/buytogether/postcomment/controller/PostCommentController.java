@@ -1,11 +1,14 @@
 package com.together.buytogether.postcomment.controller;
 
+import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
+import com.together.buytogether.postcomment.dto.response.UpdateCommentResponseDTO;
 import com.together.buytogether.postcomment.service.PostCommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,36 +23,36 @@ public class PostCommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(
+    public ResponseEntity<ResponseDTO<String>> deleteComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long commentId) {
-        postCommentService.deleteComment(memberId, commentId);
+        return ResponseEntity.status(HttpStatus.OK).body(postCommentService.deleteComment(memberId, commentId));
     }
 
     @GetMapping
-    public List<CommentResponseDTO> getAllComment(@PathVariable Long postId) {
-        return postCommentService.getPostComments(postId);
+    public ResponseEntity<ResponseDTO<List<CommentResponseDTO>>> getAllComment(@PathVariable Long postId) {
+        return ResponseEntity.status(HttpStatus.OK).body(postCommentService.getPostComments(postId));
     }
 
     @GetMapping("/{commentId}")
-    public CommentResponseDTO getComment(@PathVariable Long commentId) {
-        return postCommentService.getPostComment(commentId);
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> getComment(@PathVariable Long commentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(postCommentService.getPostComment(commentId));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerComment(
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> registerComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId,
             @RequestBody @Valid CommentDTO commentDTO) {
-        postCommentService.registerComment(memberId, postId, commentDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(postCommentService.registerComment(memberId, postId, commentDTO));
     }
 
     @PutMapping("/{commentId}")
-    public void updateComment(
+    public ResponseEntity<ResponseDTO<UpdateCommentResponseDTO>> updateComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable @Valid Long commentId,
             @RequestBody @Valid CommentDTO commentDTO) {
-        postCommentService.updateComment(memberId, commentId, commentDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(postCommentService.updateComment(memberId, commentId, commentDTO));
     }
 }

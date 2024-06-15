@@ -1,6 +1,7 @@
 package com.together.buytogether.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
@@ -82,7 +83,8 @@ public class PostControllerTest {
     @DisplayName("게시글을 조회할 수 있다")
     void getPost() throws Exception {
         PostResponseDTO postResponseDTO = aPostResponseDTO().build();
-        given(postService.getPost(postId)).willReturn(postResponseDTO);
+        ResponseDTO responseDTO = ResponseDTO.successResult(postResponseDTO);
+        given(postService.getPost(postId)).willReturn(responseDTO);
 
         mockMvc.perform(get("/posts/{postId}", postId))
                 .andExpect(status().is2xxSuccessful())
