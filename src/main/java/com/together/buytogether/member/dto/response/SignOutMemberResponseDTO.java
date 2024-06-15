@@ -1,6 +1,9 @@
 package com.together.buytogether.member.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.util.Assert;
 
-public record SignOutMemberResponseDTO(@NotBlank(message = "메세지 값은 필수입니다") String message) {
+public record SignOutMemberResponseDTO(String message) {
+    public SignOutMemberResponseDTO {
+        Assert.hasText(message, "메세지는 필수 값입니다.");
+    }
 }
