@@ -2,10 +2,12 @@ package com.together.buytogether.member.service;
 
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
+import com.together.buytogether.common.utils.HashingUtil;
+import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.member.dto.request.RegisterMemberDTO;
-import com.together.buytogether.member.utils.HashingUtil;
+import com.together.buytogether.member.dto.response.RegisterMemberResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +20,13 @@ public class MemberService {
     }
 
     @Transactional
-    public void registerMember(RegisterMemberDTO registerMemberDTO) {
+    public ResponseDTO<RegisterMemberResponseDTO> registerMember(RegisterMemberDTO registerMemberDTO) {
         validateDuplicateMember(registerMemberDTO.email());
         Member member = registerMemberDTO.toDomain();
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        return ResponseDTO.successResult(new RegisterMemberResponseDTO(savedMember.getName(),
+                savedMember.getEmail(),
+                savedMember.getPhoneNumber()));
     }
 
     private void validateDuplicateMember(String email) {
