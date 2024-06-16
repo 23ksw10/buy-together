@@ -1,5 +1,6 @@
 package com.together.buytogether.post.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.member.domain.Member;
@@ -155,5 +156,10 @@ public class Post {
             throw new CustomException(ErrorCode.ENROLL_MEMBER_NOT_BE_NEGATIVE);
         }
         joinCount--;
+    }
+
+    @VisibleForTesting
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 }

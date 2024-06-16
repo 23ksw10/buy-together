@@ -1,5 +1,6 @@
 package com.together.buytogether.enroll.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
 import jakarta.persistence.*;
@@ -32,9 +33,20 @@ public class Enroll {
     @CreatedDate
     private LocalDateTime createdAt;
 
+
     @Builder
     public Enroll(Member member, Post post) {
         this.member = member;
         this.post = post;
+    }
+
+    @VisibleForTesting
+    public void setId(Long id) {
+        this.enrollId = id;
+    }
+
+    @VisibleForTesting
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
