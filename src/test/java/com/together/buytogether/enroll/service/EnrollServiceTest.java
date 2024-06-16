@@ -7,6 +7,7 @@ import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
+import com.together.buytogether.post.domain.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.together.buytogether.member.domain.MemberFixture.aMember;
@@ -37,6 +39,9 @@ public class EnrollServiceTest {
     @Mock
     EnrollRepository enrollRepository;
 
+    @Mock
+    PostRepository postRepository;
+
     @InjectMocks
     EnrollService enrollService;
 
@@ -58,8 +63,15 @@ public class EnrollServiceTest {
     void joinBuyingSuccess() {
         //given
         given(commonMemberService.getMember(memberId)).willReturn(member);
-        given(commonPostService.getPost(postId)).willReturn(post);
+        given(postRepository.findWithPessimisticByPostId(postId)).willReturn(Optional.of(post));
         given(enrollRepository.findByMemberIdAndPostId(memberId, postId)).willReturn(Optional.empty());
+        Enroll existingEnroll = Enroll.builder()
+                .member(member)
+                .post(post)
+                .build();
+        existingEnroll.setId(1L);
+        existingEnroll.setCreatedAt(LocalDateTime.now());
+        given(enrollRepository.save(any(Enroll.class))).willReturn(existingEnroll);
 
         //when
         enrollService.joinBuying(memberId, postId);
@@ -79,7 +91,7 @@ public class EnrollServiceTest {
                 .post(post)
                 .build();
         given(commonMemberService.getMember(memberId)).willReturn(member);
-        given(commonPostService.getPost(postId)).willReturn(post);
+        given(postRepository.findWithPessimisticByPostId(postId)).willReturn(Optional.of(post));
         given(enrollRepository.findByMemberIdAndPostId(memberId, postId)).willReturn(Optional.of(existingEnroll));
 
         //when
