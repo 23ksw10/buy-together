@@ -9,6 +9,7 @@ import com.together.buytogether.post.domain.PostRepository;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
+import com.together.buytogether.post.dto.response.RegisterPostResponseDTO;
 import com.together.buytogether.post.dto.response.UpdatePostResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,15 +33,17 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseDTO<PostResponseDTO> registerPost(Long memberId, RegisterPostDTO registerPostDTO) {
+    public ResponseDTO<RegisterPostResponseDTO> registerPost(Long memberId, RegisterPostDTO registerPostDTO) {
         Member member = commonMemberService.getMember(memberId);
-        Post post = registerPostDTO.toDomain(member);
-        return ResponseDTO.successResult(PostResponseDTO.builder()
+        Post post = postRepository.save(registerPostDTO.toDomain(member));
+        return ResponseDTO.successResult(RegisterPostResponseDTO.builder()
                 .postId(post.getPostId())
-                .memberName(post.getMember().getName())
+                .name(post.getMember().getName())
+                .joinCount(post.getJoinCount())
+                .maxCount(post.getMaxJoinCount())
                 .content(post.getContent())
                 .title(post.getTitle())
-                .expiredAt(post.getExpiredAt())
+                .createdAt(LocalDateTime.now())
                 .build());
     }
 
