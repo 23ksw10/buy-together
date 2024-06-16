@@ -88,8 +88,8 @@ public class PostControllerTest {
 
         mockMvc.perform(get("/posts/{postId}", postId))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.title").value("제목"))
-                .andExpect(jsonPath("$.content").value("내용"))
+                .andExpect(jsonPath("$.data.title").value("제목"))
+                .andExpect(jsonPath("$.data.content").value("내용"))
                 .andDo(log());
 
         then(postService).should().getPost(postId);

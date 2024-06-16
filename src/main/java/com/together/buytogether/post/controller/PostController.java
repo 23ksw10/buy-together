@@ -5,6 +5,7 @@ import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
+import com.together.buytogether.post.dto.response.RegisterPostResponseDTO;
 import com.together.buytogether.post.dto.response.UpdatePostResponseDTO;
 import com.together.buytogether.post.service.PostService;
 import jakarta.validation.Valid;
@@ -33,8 +34,8 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDTO<PostResponseDTO>> registerPost(@RequestBody @Valid RegisterPostDTO registerPostDTO,
-                                                                     @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId) {
+    public ResponseEntity<ResponseDTO<RegisterPostResponseDTO>> registerPost(@RequestBody @Valid RegisterPostDTO registerPostDTO,
+                                                                             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.registerPost(memberId, registerPostDTO));
     }
 
