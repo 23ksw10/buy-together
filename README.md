@@ -5,6 +5,8 @@
 
 - Java 17
 - Spring boot 3.1
+- MySQL
+- JPA
 
 ## 요구사항
 
