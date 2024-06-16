@@ -88,4 +88,9 @@ public class PostComment {
     public void setCommentId(Long id) {
         this.commentId = id;
     }
+
+    @VisibleForTesting
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
