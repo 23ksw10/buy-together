@@ -24,14 +24,14 @@ public record RegisterPostDTO(
         @NotNull(message = "구매 참여 인원은 필수입니다")
         Long joinCount) {
     public Post toDomain(Member member) {
-        return new Post(
-                member,
-                title,
-                content,
-                status,
-                expiredAt,
-                maxJoinCount,
-                joinCount
-        );
+        return Post.builder()
+                .member(member)
+                .title(title)
+                .content(content)
+                .status(status)
+                .expiredAt(expiredAt)
+                .maxJoinCount(maxJoinCount)
+                .joinCount(joinCount)
+                .build();
     }
 }

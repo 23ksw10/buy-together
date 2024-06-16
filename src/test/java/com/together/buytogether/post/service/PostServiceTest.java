@@ -57,6 +57,7 @@ public class PostServiceTest {
         //given
         Member member = aMember().build();
         Post post = aPost().build();
+        post.setPostId(postId);
         RegisterPostDTO registerPostDTO = aRegisterPostDTO().build();
         given(commonMemberService.getMember(any(Long.class))).willReturn(member);
         given(postRepository.save(any(Post.class))).willReturn(post);

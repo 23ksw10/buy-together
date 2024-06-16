@@ -1,9 +1,9 @@
 package com.together.buytogether.member.dto.request;
 
+import com.together.buytogether.common.utils.HashingUtil;
 import com.together.buytogether.member.domain.Address;
 import com.together.buytogether.member.domain.Gender;
 import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.member.utils.HashingUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

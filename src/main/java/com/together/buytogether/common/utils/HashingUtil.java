@@ -1,4 +1,4 @@
-package com.together.buytogether.member.utils;
+package com.together.buytogether.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 

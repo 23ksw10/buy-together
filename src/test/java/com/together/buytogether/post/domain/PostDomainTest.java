@@ -1,5 +1,6 @@
 package com.together.buytogether.post.domain;
 
+import com.together.buytogether.common.error.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
-public class PostTest {
+public class PostDomainTest {
     @Test
     @DisplayName("게시글 수정")
     void updatePost() {
@@ -25,8 +26,8 @@ public class PostTest {
 
 
     @Test
-    @DisplayName("게시글 수정 - 게시글 상태가 CLOSED일 경우 예외가 발생한다")
-    void fail_invalid_status_updatePost() {
+    @DisplayName("게시글 수정 - 게시글 상태가 CLOSED 경우 예외가 발생한다")
+    void throwExceptionWhenUpdateClosedPost() {
         Post post = PostFixture.aPost().status(PostStatus.CLOSED).build();
         assertThatThrownBy(() -> {
             post.update("newTitle",
@@ -34,8 +35,8 @@ public class PostTest {
                     PostStatus.OPEN, LocalDateTime.now().plusDays(2),
                     post.getMaxJoinCount());
         })
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("종료된 게시글은 수정할 수 없습니다");
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이미 마감된 게시글입니다");
 
     }
 }

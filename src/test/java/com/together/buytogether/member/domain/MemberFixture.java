@@ -1,6 +1,6 @@
 package com.together.buytogether.member.domain;
 
-import com.together.buytogether.member.utils.HashingUtil;
+import com.together.buytogether.common.utils.HashingUtil;
 
 public class MemberFixture {
 
