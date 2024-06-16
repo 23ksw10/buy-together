@@ -4,6 +4,7 @@ import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
+import com.together.buytogether.postcomment.dto.response.RegisterCommentResponseDTO;
 import com.together.buytogether.postcomment.dto.response.UpdateCommentResponseDTO;
 import com.together.buytogether.postcomment.service.PostCommentService;
 import jakarta.validation.Valid;
@@ -41,7 +42,7 @@ public class PostCommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> registerComment(
+    public ResponseEntity<ResponseDTO<RegisterCommentResponseDTO>> registerComment(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
             @PathVariable Long postId,
             @RequestBody @Valid CommentDTO commentDTO) {

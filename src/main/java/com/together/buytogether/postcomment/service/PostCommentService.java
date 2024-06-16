@@ -11,6 +11,7 @@ import com.together.buytogether.postcomment.domain.PostComment;
 import com.together.buytogether.postcomment.domain.PostCommentRepository;
 import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
+import com.together.buytogether.postcomment.dto.response.RegisterCommentResponseDTO;
 import com.together.buytogether.postcomment.dto.response.UpdateCommentResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,18 +35,17 @@ public class PostCommentService {
     }
 
     @Transactional
-    public ResponseDTO<CommentResponseDTO> registerComment(Long memberId, Long postId, CommentDTO commentDTO) {
+    public ResponseDTO<RegisterCommentResponseDTO> registerComment(Long memberId, Long postId, CommentDTO commentDTO) {
         Member member = commonMemberService.getMember(memberId);
         Post post = commonPostService.getPost(postId);
         PostComment postComment = commentDTO.toDomain(member, post);
         PostComment savedComment = postCommentRepository.save(postComment);
-        return ResponseDTO.successResult(CommentResponseDTO.builder()
+        return ResponseDTO.successResult(RegisterCommentResponseDTO.builder()
                 .commentId(savedComment.getCommentId())
                 .postId(savedComment.getPost().getPostId())
                 .content(savedComment.getContent())
                 .memberName(savedComment.getMember().getName())
-                .createdAt(savedComment.getCreatedAt().toString())
-                .updatedAt(savedComment.getUpdatedAt().toString())
+                .createdAt(savedComment.getCreatedAt())
                 .build());
     }
 
@@ -57,8 +57,8 @@ public class PostCommentService {
                 .postId(postComment.getPost().getPostId())
                 .content(postComment.getContent())
                 .memberName(postComment.getMember().getName())
-                .createdAt(postComment.getCreatedAt().toString())
-                .updatedAt(postComment.getUpdatedAt().toString())
+                .createdAt(postComment.getCreatedAt())
+                .updatedAt(postComment.getUpdatedAt())
                 .build());
     }
 
@@ -71,8 +71,8 @@ public class PostCommentService {
                         c.getPost().getPostId(),
                         c.getMember().getName(),
                         c.getContent(),
-                        c.getCreatedAt().toString(),
-                        c.getUpdatedAt().toString()
+                        c.getCreatedAt(),
+                        c.getUpdatedAt()
                 ))
                 .toList();
         return ResponseDTO.successResult(commentsResponse);
@@ -90,7 +90,7 @@ public class PostCommentService {
                 .postId(postComment.getPost().getPostId())
                 .currentContent(postComment.getContent())
                 .memberName(postComment.getMember().getName())
-                .updatedAt(postComment.getUpdatedAt().toString())
+                .updatedAt(postComment.getUpdatedAt())
                 .build());
     }
 
