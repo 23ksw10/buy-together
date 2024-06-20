@@ -1,5 +1,6 @@
 package com.together.buytogether.member.controller;
 
+import com.together.buytogether.annotation.LoginRequired;
 import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.SessionConst;
@@ -46,6 +47,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.successResult(signInMemberResponseDTO));
     }
 
+    @LoginRequired
     @PostMapping("/sign-out")
     public ResponseEntity<ResponseDTO> signOut(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

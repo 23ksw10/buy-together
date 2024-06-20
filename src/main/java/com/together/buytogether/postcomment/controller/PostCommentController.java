@@ -1,7 +1,8 @@
 package com.together.buytogether.postcomment.controller;
 
+import com.together.buytogether.annotation.LoginRequired;
+import com.together.buytogether.annotation.LoginUser;
 import com.together.buytogether.common.utils.ResponseDTO;
-import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.postcomment.dto.request.CommentDTO;
 import com.together.buytogether.postcomment.dto.response.CommentResponseDTO;
 import com.together.buytogether.postcomment.dto.response.RegisterCommentResponseDTO;
@@ -24,8 +25,9 @@ public class PostCommentController {
     }
 
     @DeleteMapping("/{commentId}")
+    @LoginRequired
     public ResponseEntity<ResponseDTO<String>> deleteComment(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+            @LoginUser Long memberId,
             @PathVariable Long commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(postCommentService.deleteComment(memberId, commentId));
     }
@@ -41,17 +43,19 @@ public class PostCommentController {
     }
 
     @PostMapping
+    @LoginRequired
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ResponseDTO<RegisterCommentResponseDTO>> registerComment(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+            @LoginUser Long memberId,
             @PathVariable Long postId,
             @RequestBody @Valid CommentDTO commentDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postCommentService.registerComment(memberId, postId, commentDTO));
     }
 
     @PutMapping("/{commentId}")
+    @LoginRequired
     public ResponseEntity<ResponseDTO<UpdateCommentResponseDTO>> updateComment(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+            @LoginUser Long memberId,
             @PathVariable @Valid Long commentId,
             @RequestBody @Valid CommentDTO commentDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(postCommentService.updateComment(memberId, commentId, commentDTO));
