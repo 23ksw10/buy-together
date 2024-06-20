@@ -49,6 +49,15 @@ public class EnrollControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 되어있지 않다면 구매에 참여할 수 없다")
+    void cannotJoinBuyingWhenNotLoggedIn() throws Exception {
+        mockMvc.perform(post("/posts/{postId}/enrolls", postId))
+                .andExpect(status().isUnauthorized())
+                .andDo(log());
+
+    }
+
+    @Test
     @DisplayName("구매를 취소할 수 있다")
     void cancelBuying() throws Exception {
         mockMvc.perform(delete("/posts/{postId}/enrolls", postId)
@@ -57,6 +66,15 @@ public class EnrollControllerTest {
                 .andDo(log());
 
         then(enrollService).should().cancelBuying(memberId, postId);
+
+    }
+
+    @Test
+    @DisplayName("로그인 되어있지 않다면 구매취소를 할 수 없다")
+    void cannotCancelBuyingWhenNotLoggedIn() throws Exception {
+        mockMvc.perform(delete("/posts/{postId}/enrolls", postId))
+                .andExpect(status().isUnauthorized())
+                .andDo(log());
 
     }
 }

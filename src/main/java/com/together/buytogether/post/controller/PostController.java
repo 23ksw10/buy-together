@@ -1,7 +1,8 @@
 package com.together.buytogether.post.controller;
 
+import com.together.buytogether.annotation.LoginRequired;
+import com.together.buytogether.annotation.LoginUser;
 import com.together.buytogether.common.utils.ResponseDTO;
-import com.together.buytogether.member.domain.SessionConst;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
@@ -26,16 +27,18 @@ public class PostController {
         this.postService = postService;
     }
 
+    @LoginRequired
     @PutMapping("/{postId}")
-    public ResponseEntity<ResponseDTO<UpdatePostResponseDTO>> updatePost(@SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+    public ResponseEntity<ResponseDTO<UpdatePostResponseDTO>> updatePost(@LoginUser Long memberId,
                                                                          @PathVariable Long postId,
                                                                          @Valid @RequestBody UpdatePostDTO updatePostDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.updatePost(memberId, postId, updatePostDTO));
     }
 
+    @LoginRequired
     @PostMapping
     public ResponseEntity<ResponseDTO<RegisterPostResponseDTO>> registerPost(@RequestBody @Valid RegisterPostDTO registerPostDTO,
-                                                                             @SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId) {
+                                                                             @LoginUser Long memberId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.registerPost(memberId, registerPostDTO));
     }
 
@@ -49,8 +52,9 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
     }
 
+    @LoginRequired
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ResponseDTO<String>> deletePost(@SessionAttribute(name = SessionConst.LOGIN_MEMBER) Long memberId,
+    public ResponseEntity<ResponseDTO<String>> deletePost(@LoginUser Long memberId,
                                                           @PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(memberId, postId));
     }
