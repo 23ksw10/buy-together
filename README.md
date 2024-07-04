@@ -9,6 +9,7 @@
 - Spring boot 3.1
 - MySQL
 - JPA
+- Redis
 
 
 ## 이슈해결 과정
