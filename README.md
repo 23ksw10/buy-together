@@ -20,8 +20,8 @@
   [Spring에서 AOP와 Resolver를 활용한 효율적인 로그인 처리](https://velog.io/@kimsw9603/Spring%EC%97%90%EC%84%9C-AOP%EC%99%80-Resolver%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9D%B8-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%B2%98%EB%A6%AC)
 
 - 동시성 이슈
-  [](https://velog.io/@kimsw9603/%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%9D%B4%EC%8A%88-%ED%95%B4%EA%B2%B0-1)
-  [](https://velog.io/@kimsw9603/%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%9D%B4%EC%8A%88-%ED%95%B4%EA%B2%B0-2)
+  [동시성 제어-1](https://velog.io/@kimsw9603/%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%9D%B4%EC%8A%88-%ED%95%B4%EA%B2%B0-1)
+  [동시성 제어-2](https://velog.io/@kimsw9603/%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%9D%B4%EC%8A%88-%ED%95%B4%EA%B2%B0-2)
 
 - 로드 밸런싱과 성능
-  [](https://velog.io/@kimsw9603/%EB%A1%9C%EB%93%9C-%EB%B0%B8%EB%9F%B0%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%B1%EB%8A%A5-%ED%96%A5%EC%83%81)
+  [로드 밸런싱 도입](https://velog.io/@kimsw9603/%EB%A1%9C%EB%93%9C-%EB%B0%B8%EB%9F%B0%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%B1%EB%8A%A5-%ED%96%A5%EC%83%81)
