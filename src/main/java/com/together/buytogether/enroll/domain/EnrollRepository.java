@@ -1,19 +1,23 @@
 package com.together.buytogether.enroll.domain;
 
-import com.together.buytogether.common.error.CustomException;
-import com.together.buytogether.common.error.ErrorCode;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 
 public interface EnrollRepository extends JpaRepository<Enroll, Long> {
-    @Query("select e from Enroll e join fetch e.member m join fetch e.post p where m.memberId = :memberId and p.postId = :postId")
-    Optional<Enroll> findByMemberIdAndPostId(@Param("memberId") Long memberId, @Param("postId") Long postId);
+	@Query("SELECT e FROM Enroll e JOIN FETCH e.member m JOIN FETCH e.product p WHERE e.enrollId =:enrollId")
+	Optional<Enroll> findByEnrollId(@Param("enrollId") Long enrollId);
 
-    default Enroll getEnroll(Long memberId, Long postId) {
-        return findByMemberIdAndPostId(memberId, postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENROLL_NOT_FOUND));
-    }
+	@Query("SELECT e FROM Enroll e JOIN FETCH e.member m JOIN FETCH e.product p WHERE m.memberId = :memberId AND p.productId = :productId")
+	Optional<Enroll> findByMemberIdAndProductId(@Param("memberId") Long memberId, @Param("productId") Long productId);
+
+	default Enroll getEnroll(Long enrollId) {
+		return findByEnrollId(enrollId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ENROLL_NOT_FOUND));
+	}
 }
