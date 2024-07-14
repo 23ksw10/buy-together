@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.together.buytogether.annotation.LoginRequired;
 import com.together.buytogether.annotation.LoginUser;
 import com.together.buytogether.common.utils.ResponseDTO;
+import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
+import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.enroll.service.EnrollFacade;
 
 @RestController
-@RequestMapping("/posts/{postId}/enrolls")
+@RequestMapping("/enrolls")
 public class EnrollController {
 	private final EnrollFacade enrollFacade;
 
@@ -24,12 +26,14 @@ public class EnrollController {
 		this.enrollFacade = enrollFacade;
 	}
 
-	@DeleteMapping()
+	@DeleteMapping("/{enrollId}")
 	@LoginRequired
 	public ResponseEntity<ResponseDTO<String>> cancel(
 		@LoginUser Long memberId,
-		@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.OK).body(enrollFacade.cancelBuying(memberId, postId));
+		@PathVariable Long enrollId,
+		CancelEnrollDTO cancelEnrollDTO) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(enrollFacade.cancelBuying(memberId, cancelEnrollDTO, enrollId));
 	}
 
 	@PostMapping()
@@ -37,7 +41,7 @@ public class EnrollController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<ResponseDTO<JoinEnrollResponseDTO>> join(
 		@LoginUser Long memberId,
-		@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(enrollFacade.joinBuying(memberId, postId));
+		JoinEnrollDTO joinEnrollDTO) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(enrollFacade.joinBuying(memberId, joinEnrollDTO));
 	}
 }
