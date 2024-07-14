@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.together.buytogether.common.lock.DistributedLockFacade;
 import com.together.buytogether.common.utils.ResponseDTO;
+import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
+import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 
 @Service
@@ -19,15 +21,17 @@ public class EnrollFacade {
 		this.distributedLockFacade = distributedLockFacade;
 	}
 
-	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, Long postId) {
-		return distributedLockFacade.executeWithLock("enroll_lock_" + postId, LOCK_WAIT_MILLI_SECOND,
+	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
+		return distributedLockFacade.executeWithLock("enroll_lock_" + joinEnrollDTO.productId(),
+			LOCK_WAIT_MILLI_SECOND,
 			LOCK_LEASE_MILLI_SECOND,
-			() -> enrollService.joinBuying(memberId, postId));
+			() -> enrollService.joinBuying(memberId, joinEnrollDTO));
 	}
 
-	public ResponseDTO<String> cancelBuying(Long memberId, Long postId) {
-		return distributedLockFacade.executeWithLock("enroll_lock_" + postId, LOCK_WAIT_MILLI_SECOND,
+	public ResponseDTO<String> cancelBuying(Long memberId, CancelEnrollDTO cancelEnrollDTO, Long enrollId) {
+		return distributedLockFacade.executeWithLock("enroll_lock_" + cancelEnrollDTO.productId(),
+			LOCK_WAIT_MILLI_SECOND,
 			LOCK_LEASE_MILLI_SECOND,
-			() -> enrollService.cancelBuying(memberId, postId));
+			() -> enrollService.cancelBuying(memberId, enrollId));
 	}
 }
