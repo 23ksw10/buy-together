@@ -6,71 +6,68 @@ import org.springframework.transaction.annotation.Transactional;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
-import com.together.buytogether.common.service.CommonPostService;
+import com.together.buytogether.common.service.CommonProductService;
 import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
+import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.post.domain.Product;
 
 @Service
 public class EnrollService {
 	private final CommonMemberService commonMemberService;
-	private final CommonPostService commonPostService;
+	private final CommonProductService commonProductService;
 	private final EnrollRepository enrollRepository;
-
-	private final PostRepository postRepository;
 
 	public EnrollService(
 		CommonMemberService commonMemberService,
-		CommonPostService commonPostService,
-		EnrollRepository enrollRepository,
-		PostRepository postRepository) {
+		CommonProductService commonProductService,
+		EnrollRepository enrollRepository) {
 		this.commonMemberService = commonMemberService;
-		this.commonPostService = commonPostService;
+		this.commonProductService = commonProductService;
 		this.enrollRepository = enrollRepository;
-		this.postRepository = postRepository;
 	}
 
 	@Transactional
-	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, Long postId) {
+	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
 		Member member = commonMemberService.getMember(memberId);
-		Post post = commonPostService.getPost(postId);
-		if (isAlreadyEnrolled(memberId, postId)) {
+		Product product = commonProductService.getProduct(joinEnrollDTO.productId());
+		if (isAlreadyEnrolled(memberId, joinEnrollDTO.productId())) {
 			throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
 		}
-		post.increaseJoinCount();
-		Enroll enroll = new Enroll(member, post);
+		product.increaseSoldQuantity(joinEnrollDTO.quantity());
+		Enroll enroll = new Enroll(member, product, joinEnrollDTO.quantity());
 		Enroll savedEnroll = enrollRepository.save(enroll);
 		return ResponseDTO.successResult(JoinEnrollResponseDTO.builder()
-			.postId(postId)
-			.postTitle(post.getTitle())
+			.postId(product.getPost().getPostId())
+			.postTitle(product.getPost().getTitle())
 			.enrollId(savedEnroll.getEnrollId())
 			.memberName(member.getName())
 			.memberId(memberId)
-			.sellerName(post.getMember().getName())
+			.sellerName(product.getPost().getMember().getName())
 			.joinedAt(savedEnroll.getCreatedAt())
 			.build());
 	}
 
 	@Transactional
-	public ResponseDTO<String> cancelBuying(Long memberId, Long postId) {
-		Post post = commonPostService.getPost(postId);
-		Enroll enroll = enrollRepository.getEnroll(memberId, postId);
-		post.decreaseJoinCount();
+	public ResponseDTO<String> cancelBuying(Long memberId, Long enrollId) {
+		Enroll enroll = enrollRepository.getEnroll(enrollId);
+		validateCancellation(memberId, enroll);
+		enroll.getProduct().decreaseSoldQuantity(enroll.getQuantity());
 		enrollRepository.delete(enroll);
 		return ResponseDTO.successResult("구매가 취소되셨습니다");
 	}
 
-	private boolean isAlreadyEnrolled(Long memberId, Long postId) {
-		return enrollRepository.findByMemberIdAndPostId(memberId, postId).isPresent();
+	private boolean isAlreadyEnrolled(Long memberId, Long productId) {
+		return enrollRepository.findByMemberIdAndProductId(memberId, productId).isPresent();
 	}
 
-	private Post findPostWithPessimistic(Long postId) {
-		return postRepository.findWithPessimisticByPostId(postId).orElseThrow(
-			() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+	private void validateCancellation(Long memberId, Enroll enroll) {
+		if (!enroll.getMember().getMemberId().equals(memberId)) {
+			throw new CustomException(ErrorCode.IS_NOT_OWNER);
+		}
 	}
 
 }
