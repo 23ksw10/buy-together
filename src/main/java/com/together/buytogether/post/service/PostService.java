@@ -3,6 +3,7 @@ package com.together.buytogether.post.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,7 @@ public class PostService {
 			.build());
 	}
 
+	@CacheEvict(key = "#postId", value = "post")
 	@Transactional
 	public ResponseDTO<UpdatePostResponseDTO> updatePost(Long memberId, Long postId, UpdatePostDTO updatePostDTO) {
 		Post post = commonPostService.getPost(postId);
@@ -65,6 +67,7 @@ public class PostService {
 			.build());
 	}
 
+	@CacheEvict(key = "#postId", value = "post")
 	@Transactional
 	public ResponseDTO<String> deletePost(Long memberId, Long postId) {
 		Post post = commonPostService.getPost(postId);
