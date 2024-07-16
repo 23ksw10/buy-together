@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.common.annotations.VisibleForTesting;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
@@ -56,6 +60,8 @@ public class Post {
 	@Comment("글 상태")
 	private PostStatus status;
 
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	@Column(name = "expired_at", nullable = false)
 	@Comment("글 만료일")
 	private LocalDateTime expiredAt;
