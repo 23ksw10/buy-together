@@ -1,8 +1,11 @@
 package com.together.buytogether.enroll.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +18,7 @@ import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
+import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
 import com.together.buytogether.enroll.service.EnrollFacade;
 
 @RestController
@@ -43,5 +47,11 @@ public class EnrollController {
 		@LoginUser Long memberId,
 		JoinEnrollDTO joinEnrollDTO) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(enrollFacade.joinBuying(memberId, joinEnrollDTO));
+	}
+
+	@GetMapping()
+	@LoginRequired
+	public ResponseEntity<ResponseDTO<List<RecentEnrollInfoDto>>> getRecentEnrolls(@LoginUser Long memberId) {
+		return ResponseEntity.status(HttpStatus.OK).body(enrollFacade.getRecentEnrolls(memberId));
 	}
 }
