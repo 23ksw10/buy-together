@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.error.ErrorCode;
 
-public interface EnrollRepository extends JpaRepository<Enroll, Long> {
+public interface EnrollRepository extends JpaRepository<Enroll, Long>, CustomizeEnrollRepository {
 	@Query("SELECT e FROM Enroll e JOIN FETCH e.member m JOIN FETCH e.product p WHERE e.enrollId =:enrollId")
 	Optional<Enroll> findByEnrollId(@Param("enrollId") Long enrollId);
 

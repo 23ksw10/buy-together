@@ -1,5 +1,7 @@
 package com.together.buytogether.enroll.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
+import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Product;
 
@@ -58,6 +61,10 @@ public class EnrollService {
 		enroll.getProduct().decreaseSoldQuantity(enroll.getQuantity());
 		enrollRepository.delete(enroll);
 		return ResponseDTO.successResult("구매가 취소되셨습니다");
+	}
+
+	public ResponseDTO<List<RecentEnrollInfoDto>> getRecentEnrolls(Long memberId) {
+		return ResponseDTO.successResult(enrollRepository.getRecentEnrolls(memberId));
 	}
 
 	private boolean isAlreadyEnrolled(Long memberId, Long productId) {
