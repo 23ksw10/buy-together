@@ -12,7 +12,7 @@
 - Redis
 
 ## ERD
-![Uploading db entity.png…]()
+![db entity](https://github.com/user-attachments/assets/b77c84ce-1a09-406b-9f4b-77f8d5007e2f)
 
 
 
