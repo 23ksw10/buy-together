@@ -11,6 +11,10 @@
 - JPA
 - Redis
 
+## ERD
+![entity](https://github.com/user-attachments/assets/5d8e2b98-2b74-4081-a160-4f30797f8663)
+
+
 
 ## 이슈해결 과정
 - 서버 증설 과정에서 발생하는 세션 문제는 어떻게 해결할까?
