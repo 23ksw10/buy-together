@@ -12,7 +12,7 @@
 - Redis
 
 ## ERD
-![db entity](https://github.com/user-attachments/assets/b77c84ce-1a09-406b-9f4b-77f8d5007e2f)
+![db entity](https://github.com/user-attachments/assets/8e4e5ff5-c51a-4166-9cf3-074f7ceeb267)
 
 
 
