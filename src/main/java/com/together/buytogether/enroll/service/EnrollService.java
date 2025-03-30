@@ -17,6 +17,7 @@ import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Product;
+import com.together.buytogether.sse.service.StockAlertService;
 
 @Service
 public class EnrollService {
@@ -24,13 +25,17 @@ public class EnrollService {
 	private final CommonProductService commonProductService;
 	private final EnrollRepository enrollRepository;
 
+	private final StockAlertService stockAlertService; // 추가
+
 	public EnrollService(
 		CommonMemberService commonMemberService,
 		CommonProductService commonProductService,
-		EnrollRepository enrollRepository) {
+		EnrollRepository enrollRepository,
+		StockAlertService stockAlertService) {
 		this.commonMemberService = commonMemberService;
 		this.commonProductService = commonProductService;
 		this.enrollRepository = enrollRepository;
+		this.stockAlertService = stockAlertService;
 	}
 
 	@Transactional
@@ -41,6 +46,7 @@ public class EnrollService {
 			throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
 		}
 		product.increaseSoldQuantity(joinEnrollDTO.quantity());
+		stockAlertService.checkAndNotifyLowStock(product);
 		Enroll enroll = new Enroll(member, product, joinEnrollDTO.quantity());
 		Enroll savedEnroll = enrollRepository.save(enroll);
 		return ResponseDTO.successResult(JoinEnrollResponseDTO.builder()
