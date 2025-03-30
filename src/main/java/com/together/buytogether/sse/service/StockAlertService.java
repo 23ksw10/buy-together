@@ -23,24 +23,19 @@ import lombok.RequiredArgsConstructor;
 public class StockAlertService {
 	private final RedisTemplate<String, String> redisTemplate;
 
-	// SSE 연결을 저장할 맵 (productId -> 이미터 집합)
 	private final Map<Long, Set<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
-	// 알림 구독 등록
 	public SseEmitter subscribe(Long userId, List<Long> productIds) {
 		SseEmitter emitter = new SseEmitter(180000L); // 3분 타임아웃
 
-		// 사용자별로 관심 상품 등록
 		for (Long productId : productIds) {
 			emitters.computeIfAbsent(productId, k -> new CopyOnWriteArraySet<>()).add(emitter);
 		}
 
-		// 연결 종료 시 정리
 		emitter.onCompletion(() -> removeEmitter(productIds, emitter));
 		emitter.onTimeout(() -> removeEmitter(productIds, emitter));
 		emitter.onError(e -> removeEmitter(productIds, emitter));
 
-		// 초기 연결 확인 이벤트 전송
 		try {
 			emitter.send(SseEmitter.event()
 				.name("connect")
@@ -64,18 +59,14 @@ public class StockAlertService {
 		}
 	}
 
-	// 제품 재고 체크 및 알림 발송
 	public void checkAndNotifyLowStock(Product product) {
 		// 남은 재고 계산
 		Long remainingStock = product.getMaxQuantity() - product.getSoldQuantity();
 
-		// 재고가 10개 이하인 경우 알림 발송
 		if (remainingStock <= 10) {
-			// Redis에 최근 알림 시간 확인 (중복 알림 방지)
 			String cacheKey = "product:lowstock:" + product.getProductId();
 			String lastNotifiedStr = redisTemplate.opsForValue().get(cacheKey);
 
-			// 마지막 알림 후 30분 지났거나 첫 알림인 경우만 발송
 			boolean shouldNotify = lastNotifiedStr == null ||
 				LocalDateTime.parse(lastNotifiedStr).plusMinutes(30).isBefore(LocalDateTime.now());
 
@@ -103,7 +94,6 @@ public class StockAlertService {
 				}
 			}
 
-			// 비정상 이미터 제거
 			productEmitters.removeAll(deadEmitters);
 		}
 	}
