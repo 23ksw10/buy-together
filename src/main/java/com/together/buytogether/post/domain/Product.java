@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +38,8 @@ public class Product {
 	private Long soldQuantity;
 	@Column(name = "max_quantity", nullable = false)
 	private Long maxQuantity;
+	@Version
+	private Long version;
 
 	@Builder
 	public Product(
