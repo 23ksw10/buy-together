@@ -92,6 +92,83 @@ public class EnrollConcurrencyTest {
 	}
 
 	@Test
+	@DisplayName("낙관적 락 구매 참여 동시성 테스트")
+	void joinOptimisticEnrollConcurrencyTest() throws InterruptedException, ExecutionException {
+		int threadCount = 50;
+		ExecutorService executorService = Executors.newFixedThreadPool(32);
+		CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+		Member member = memberRepository.save(aMember().build());
+		Post post = postRepository.save(aPost().member(member).build());
+		Long productId = productRepository.save(aProduct().post(post).build()).getProductId();
+		List<Member> members = new ArrayList<>();
+		for (int i = 0; i < threadCount; i++) {
+			members.add(memberRepository.save(aMember().email("ksw" + i + "@gmail.com").build()));
+		}
+
+		for (Member savedMember : members) {
+			executorService.execute(() -> {
+				try {
+					enrollFacade.optimisticJoinBuying(savedMember.getMemberId(),
+						aJoinEnrollDTOFixture().productId(productId).quantity(1L).build());
+				} catch (CustomException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				} finally {
+					countDownLatch.countDown();
+				}
+
+			});
+		}
+		countDownLatch.await();
+
+		Product savedProduct = productRepository.getByProductId(productId);
+		assertEquals(threadCount, savedProduct.getSoldQuantity());
+	}
+
+	@Test
+	@DisplayName("분산 락, 낙관적 락 적용 시, 데이터 정확히 처리")
+	void distributedLockDelayTest() throws InterruptedException {
+		int threadCount = 2;
+		ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+		CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+		Member member = memberRepository.save(aMember().build());
+		Member member2 = memberRepository.save(aMember().email("abd@gmail.com").build());
+		Post post = postRepository.save(aPost().member(member).build());
+		Long productId = productRepository.save(aProduct().post(post).build()).getProductId();
+
+		executorService.execute(() -> {
+			try {
+				enrollFacade.joinBuying(member.getMemberId(),
+					aJoinEnrollDTOFixture().productId(productId).quantity(1L).build());
+			} catch (CustomException e) {
+				e.printStackTrace();
+			} finally {
+				countDownLatch.countDown();
+			}
+		});
+
+		executorService.execute(() -> {
+			try {
+				enrollFacade.optimisticJoinBuying(member2.getMemberId(),
+					aJoinEnrollDTOFixture().productId(productId).quantity(1L).build());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+
+		Product savedProduct = productRepository.getByProductId(productId);
+		assertEquals(2, savedProduct.getSoldQuantity());
+
+	}
+
+	@Test
 	@DisplayName("구매 취소 동시성 테스트")
 	void cancelEnrollConcurrencyTest() throws InterruptedException, ExecutionException {
 		int threadCount = 50;

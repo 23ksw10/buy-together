@@ -15,8 +15,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	@Query("SELECT p FROM Product p JOIN FETCH p.post post JOIN FETCH post.member WHERE p.productId = :productId")
 	Optional<Product> findById(@Param("productId") Long productId);
 
-	default Product getByProductId(Long postId) {
-		return findById(postId).orElseThrow(
+	default Product getByProductId(Long productId) {
+		return findById(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND)
 		);
 	}
