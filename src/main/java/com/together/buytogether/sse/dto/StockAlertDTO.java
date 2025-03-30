@@ -15,7 +15,7 @@ public record StockAlertDTO(
 	public StockAlertDTO(Product product) {
 		this(
 			product.getProductId(),
-			product.getPost().getTitle(), // 상품명은 게시글 제목으로 가정
+			product.getPost().getTitle(),
 			product.getMaxQuantity() - product.getSoldQuantity(),
 			product.getMaxQuantity(),
 			LocalDateTime.now()
