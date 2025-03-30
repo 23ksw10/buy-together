@@ -19,6 +19,7 @@ import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.RegisterProductDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
+import com.together.buytogether.post.dto.response.PostLikeResponseDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
 import com.together.buytogether.post.dto.response.RegisterPostResponseDTO;
 import com.together.buytogether.post.dto.response.RegisterProductResponseDTO;
@@ -82,5 +83,13 @@ public class PostController {
 		@RequestBody @Valid RegisterProductDTO registerProductDTO) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(productService.registerProduct(memberID, postId, registerProductDTO));
+	}
+
+	@LoginRequired
+	@PostMapping("/{postId}/like")
+	public ResponseEntity<ResponseDTO<PostLikeResponseDTO>> likePost(@LoginUser Long memberID,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(postService.likePost(memberID, postId));
 	}
 }
