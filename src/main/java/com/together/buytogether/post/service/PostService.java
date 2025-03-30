@@ -2,19 +2,27 @@ package com.together.buytogether.post.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonPostService;
 import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.post.domain.Post;
+import com.together.buytogether.post.domain.PostLike;
+import com.together.buytogether.post.domain.PostLikeRepository;
+import com.together.buytogether.post.domain.PostLikeStatus;
 import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.post.domain.PostStatus;
 import com.together.buytogether.post.dto.request.RegisterPostDTO;
 import com.together.buytogether.post.dto.request.UpdatePostDTO;
+import com.together.buytogether.post.dto.response.PostLikeResponseDTO;
 import com.together.buytogether.post.dto.response.PostResponseDTO;
 import com.together.buytogether.post.dto.response.RegisterPostResponseDTO;
 import com.together.buytogether.post.dto.response.UpdatePostResponseDTO;
@@ -24,14 +32,17 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final CommonMemberService commonMemberService;
 	private final CommonPostService commonPostService;
+	private final PostLikeRepository postLikeRepository;
 
 	public PostService(
 		PostRepository postRepository,
 		CommonMemberService commonMemberService,
-		CommonPostService commonPostService) {
+		CommonPostService commonPostService,
+		PostLikeRepository postLikeRepository) {
 		this.postRepository = postRepository;
 		this.commonMemberService = commonMemberService;
 		this.commonPostService = commonPostService;
+		this.postLikeRepository = postLikeRepository;
 	}
 
 	@Transactional
@@ -44,6 +55,38 @@ public class PostService {
 			.content(post.getContent())
 			.title(post.getTitle())
 			.createdAt(LocalDateTime.now())
+			.build());
+	}
+
+	@Transactional
+	public ResponseDTO<PostLikeResponseDTO> likePost(Long memberId, Long postId) {
+		Member member = commonMemberService.getMember(memberId);
+		Post post = commonPostService.getPost(postId);
+		if (post.getStatus() == PostStatus.CLOSED) {
+			throw new CustomException(ErrorCode.POST_CLOSED);
+		}
+		Optional<PostLike> optionalPostLike = postLikeRepository.findByMemberIdAndPostId(memberId, postId);
+		if (optionalPostLike.isPresent()) {
+			PostLike postLike = optionalPostLike.get();
+			if (postLike.getPostLikeStatus() == PostLikeStatus.OPEN) {
+				postLike.delete();
+				return ResponseDTO.successResult(PostLikeResponseDTO.builder()
+					.postId(postId)
+					.memberId(memberId)
+					.isDeleted(true)
+					.build());
+			}
+
+			postLike.active();
+
+		} else {
+			PostLike postLike = new PostLike(member, post, PostLikeStatus.OPEN);
+			postLikeRepository.save(postLike);
+		}
+		return ResponseDTO.successResult(PostLikeResponseDTO.builder()
+			.postId(postId)
+			.memberId(memberId)
+			.isDeleted(false)
 			.build());
 	}
 
