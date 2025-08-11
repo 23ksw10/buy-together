@@ -1,8 +1,9 @@
 package com.together.buytogether.common.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.together.buytogether.annotation.SingleFlightCacheable;
 import com.together.buytogether.post.domain.Post;
 import com.together.buytogether.post.domain.PostRepository;
 
@@ -14,7 +15,9 @@ public class CommonPostService {
 		this.postRepository = postRepository;
 	}
 
-	@Cacheable(key = "#postId", value = "post")
+	@SingleFlightCacheable(cacheName = "SinglePost", key = "#postId",
+		redisTimeToLiveMillis = 20000, localTimeToLiveMillis = 10000, decisionForUpdate = 70)
+	@Transactional(readOnly = true)
 	public Post getPost(Long postId) {
 		return postRepository.getByPostId(postId);
 	}

@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     implementation "com.querydsl:querydsl-core"
     implementation "com.querydsl:querydsl-collections"
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 
 
     //API 테스트 라이브러리
