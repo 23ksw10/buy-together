@@ -17,6 +17,10 @@
 
 
 ## 이슈해결 과정
+
+- Redis Cache + Local Cache
+  [Cache 적용기](https://blog.naver.com/kimsw9603/223977039248)
+  
 - SSE 기반 재고 알림 시스템 구현하기 [소켓,폴링 그리고 SSE](https://blog.naver.com/kimsw9603)
 
 - 서버 증설 과정에서 발생하는 세션 문제는 어떻게 해결할까?
@@ -32,8 +36,6 @@
 - 로드 밸런싱과 성능
   [로드 밸런싱 도입](https://velog.io/@kimsw9603/%EB%A1%9C%EB%93%9C-%EB%B0%B8%EB%9F%B0%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%B1%EB%8A%A5-%ED%96%A5%EC%83%81)
 
-- Redis Cache
-  [Cache 적용기](https://velog.io/@kimsw9603/Redis-%EC%BA%90%EC%8B%9C-%EB%8F%84%EC%9E%85%EA%B8%B0)
 
 - 쿼리 성능 올리리
   [Indexing](https://velog.io/@kimsw9603/%EC%9D%B8%EB%8D%B1%EC%8A%A4-%EC%B5%9C%EC%A0%81%ED%99%94%ED%95%98%EA%B8%B0-%EB%B3%B5%ED%95%A9-%EC%9D%B8%EB%8D%B1%EC%8A%A4%EC%99%80-%EC%BB%A4%EB%B2%84%EB%A7%81-%EC%9D%B8%EB%8D%B1%EC%8A%A4)
