@@ -38,6 +38,8 @@ dependencies {
     implementation "com.querydsl:querydsl-core"
     implementation "com.querydsl:querydsl-collections"
     implementation 'com.github.ben-manes.caffeine:caffeine'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
 
     //API 테스트 라이브러리
