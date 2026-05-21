@@ -1,9 +1,20 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk AS build
+
+WORKDIR /workspace
+
+COPY gradlew settings.gradle build.gradle ./
+COPY gradle gradle
+COPY src src
+
+RUN rm -rf src/main/generated
+RUN ./gradlew --no-daemon clean bootJar -x test
+
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-COPY build/libs/*.jar app.jar
+COPY --from=build /workspace/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
