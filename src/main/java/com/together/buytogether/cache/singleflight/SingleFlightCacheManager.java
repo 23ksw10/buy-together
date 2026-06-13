@@ -68,7 +68,8 @@ public class SingleFlightCacheManager {
 	}
 
 	public void releaseLock(String cacheKey) {
-		redisCacheService.unlock(cacheKey);
+		String lockKey = cacheKey + "::lock";
+		redisCacheService.unlock(lockKey);
 	}
 
 	public void storeInBothCaches(String cacheKey,
