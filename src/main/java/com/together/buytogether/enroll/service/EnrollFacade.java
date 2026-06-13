@@ -4,7 +4,6 @@ import static com.together.buytogether.common.lock.LockNumberConstants.*;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import com.together.buytogether.common.lock.DistributedLockFacade;
@@ -25,7 +24,7 @@ public class EnrollFacade {
 		this.distributedLockFacade = distributedLockFacade;
 	}
 
-	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, @NotNull JoinEnrollDTO joinEnrollDTO) {
+	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
 		return distributedLockFacade.executeWithLock("enroll_lock_" + joinEnrollDTO.productId(),
 			LOCK_WAIT_MILLI_SECOND,
 			LOCK_LEASE_MILLI_SECOND,
