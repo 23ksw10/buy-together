@@ -26,7 +26,8 @@ public class RedisCacheService {
 		return (SingleFlightCacheData)value;
 	}
 
-	public void put(String key, SingleFlightCacheData singleFlightCacheData, Long timeToLiveMillis) {
+	public void put(String key, SingleFlightCacheData<?> singleFlightCacheData, Long timeToLiveMillis) {
+		log.info("Redis 캐시 저장: {}", key);
 		redisTemplate.opsForValue().set(key, singleFlightCacheData, Duration.ofMillis(timeToLiveMillis));
 	}
 

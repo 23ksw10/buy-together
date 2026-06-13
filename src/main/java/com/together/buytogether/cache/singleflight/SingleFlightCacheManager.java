@@ -37,8 +37,12 @@ public class SingleFlightCacheManager {
 		return CacheState.LOCAL_VALID;
 	}
 
-	public void putToRedis(String key, SingleFlightCacheData singleFlightCacheData, Long timeToLiveMillis) {
+	public void putToRedis(String key, SingleFlightCacheData<?> singleFlightCacheData, Long timeToLiveMillis) {
 		redisCacheService.put(key, singleFlightCacheData, timeToLiveMillis);
+	}
+
+	public void putToLocal(String cacheName, String cacheKey, SingleFlightCacheData<?> data, Long timeToLiveMillis) {
+		localCacheManager.putToCache(cacheName, cacheKey, data, timeToLiveMillis);
 	}
 
 	public SingleFlightCacheData getFromRedis(String cacheKey) {
@@ -74,7 +78,7 @@ public class SingleFlightCacheManager {
 
 	public void storeInBothCaches(String cacheKey,
 		SingleFlightCacheable annotation,
-		SingleFlightCacheData data) {
+		SingleFlightCacheData<?> data) {
 		log.info(cacheKey);
 		redisCacheService.put(cacheKey, data, annotation.redisTimeToLiveMillis());
 		localCacheManager.putToCache(annotation.cacheName(), cacheKey, data, annotation.localTimeToLiveMillis());
