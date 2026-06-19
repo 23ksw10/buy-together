@@ -1,0 +1,18 @@
+# Isolated profile for SingleFlightCacheableIntegrationTest.
+# Redis comes from a Testcontainers instance (spring.redis.host/port are set via @DynamicPropertySource).
+# The DB is an in-memory H2 in MySQL-compatibility mode; the test bean does not touch it,
+# it only needs the JPA context to start.
+spring:
+  datasource:
+    url: jdbc:h2:mem:singleflight;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  # Clear the base application.yml's redis password — the Testcontainers Redis has no auth,
+  # so inheriting a password would make Lettuce send AUTH and fail to connect.
+  redis:
+    password:

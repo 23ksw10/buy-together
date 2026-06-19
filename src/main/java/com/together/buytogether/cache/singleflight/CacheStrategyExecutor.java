@@ -1,7 +1,5 @@
 package com.together.buytogether.cache.singleflight;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,12 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class CacheStrategyExecutor {
-	private static final long BASE_DELAY_MILLIS = 1000L;
-	private static final long MAX_DELAY_MILLIS = 100_000L;
+	private static final int MAX_CACHE_WAIT_ATTEMPTS = 10;
+	private static final long BASE_DELAY_MILLIS = 50L;
+	private static final long MAX_DELAY_MILLIS = 500L;
 	private final SingleFlightCacheManager singleFlightCacheManager;
+	private final AsyncCacheRefresher asyncCacheRefresher;
 
-	public CacheStrategyExecutor(SingleFlightCacheManager singleFlightCacheManager) {
+	public CacheStrategyExecutor(SingleFlightCacheManager singleFlightCacheManager,
+		AsyncCacheRefresher asyncCacheRefresher) {
 		this.singleFlightCacheManager = singleFlightCacheManager;
+		this.asyncCacheRefresher = asyncCacheRefresher;
 	}
 
 	public Object executeCacheStrategy(SingleFlightCacheable annotation, String cacheKey,
@@ -29,14 +31,14 @@ public class CacheStrategyExecutor {
 		CacheState state = singleFlightCacheManager.determineCacheState(annotation.cacheName(), cacheKey);
 
 		return switch (state) {
-			case NEVER_CACHED -> handleNeverCached(annotation, joinPoint, cacheKey);
-			case LOCAL_EXPIRED_REDIS_EXPIRED -> handleBothExpired(cacheKey, annotation, joinPoint);
-			case LOCAL_EXPIRED_REDIS_VALID -> handleLocalExpiredOnly(cacheKey, joinPoint, annotation);
-			case LOCAL_VALID -> handleLocalValid(annotation, cacheKey);
+			case NEVER_CACHED, LOCAL_EXPIRED_REDIS_EXPIRED ->
+				handleCacheMissWithSingleFlight(cacheKey, annotation, joinPoint);
+			case LOCAL_EXPIRED_REDIS_VALID -> handleRedisHitAndRefreshLocal(cacheKey, joinPoint, annotation);
+			case LOCAL_VALID -> handleLocalCacheHit(annotation, cacheKey);
 		};
 	}
 
-	private Object handleBothExpired(String cacheKey, SingleFlightCacheable annotation,
+	private Object handleCacheMissWithSingleFlight(String cacheKey, SingleFlightCacheable annotation,
 		ProceedingJoinPoint joinPoint) throws Throwable {
 		if (singleFlightCacheManager.acquireLock(cacheKey)) {
 			try {
@@ -49,7 +51,7 @@ public class CacheStrategyExecutor {
 		}
 	}
 
-	private Object handleLocalValid(SingleFlightCacheable annotation, String cacheKey) {
+	private Object handleLocalCacheHit(SingleFlightCacheable annotation, String cacheKey) {
 		String cacheName = annotation.cacheName();
 		Object cachedValue = singleFlightCacheManager.getFromLocal(cacheName, cacheKey);
 		Object rawValue = (cachedValue instanceof Cache.ValueWrapper)
@@ -63,27 +65,17 @@ public class CacheStrategyExecutor {
 		return rawValue;
 	}
 
-	private Object handleLocalExpiredOnly(String cacheKey,
+	private Object handleRedisHitAndRefreshLocal(String cacheKey,
 		ProceedingJoinPoint joinPoint,
-		SingleFlightCacheable annotation) throws Throwable {
+		SingleFlightCacheable annotation) {
 		SingleFlightCacheData cacheData = singleFlightCacheManager.getFromRedis(cacheKey);
+		singleFlightCacheManager.putToLocal(annotation.cacheName(), cacheKey, cacheData,
+			annotation.localTimeToLiveMillis());
 
 		if (shouldRefresh(cacheData)) {
-			if (singleFlightCacheManager.acquireLock(cacheKey)) {
-				SingleFlightCacheData data = createAndExecuteBusinessLogic(annotation, joinPoint);
-				singleFlightCacheManager.storeInBothCaches(cacheKey, annotation, data);
-			}
-			return cacheData.data();
+			asyncCacheRefresher.refresh(cacheKey, annotation, joinPoint, cacheData.maxAttemptRefreshCache());
 		}
-
 		return cacheData.data();
-	}
-
-	private Object handleNeverCached(SingleFlightCacheable annotation, ProceedingJoinPoint joinPoint,
-		String cacheKey) throws Throwable {
-		SingleFlightCacheData result = createAndExecuteBusinessLogic(annotation, joinPoint);
-		singleFlightCacheManager.storeInBothCaches(cacheKey, annotation, result);
-		return result.data();
 	}
 
 	private boolean decideToUpdateCache(long createdAt, long timeToLiveMillis, long decisionForUpdate) {
@@ -93,7 +85,7 @@ public class CacheStrategyExecutor {
 	}
 
 	private Object waitForCacheCreation(String cacheKey) throws Throwable {
-		for (int attempt = 0; attempt < 10; attempt++) {
+		for (int attempt = 0; attempt < MAX_CACHE_WAIT_ATTEMPTS; attempt++) {
 			SingleFlightCacheData cached = singleFlightCacheManager.getFromRedis(cacheKey);
 			if (cached != null) {
 				return cached.data();
@@ -121,6 +113,7 @@ public class CacheStrategyExecutor {
 			TimeUnit.MILLISECONDS.sleep(delay);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+			throw new RuntimeException("캐시 대기 중 인터럽트가 발생했습니다", e);
 		}
 	}
 
@@ -132,7 +125,7 @@ public class CacheStrategyExecutor {
 		SingleFlightCacheData result = new SingleFlightCacheData<>(joinPoint.proceed(),
 			decisionForUpdate,
 			maxAttemptRefreshCache,
-			LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
+			System.currentTimeMillis(),
 			timeToLiveMillis);
 		return result;
 	}
