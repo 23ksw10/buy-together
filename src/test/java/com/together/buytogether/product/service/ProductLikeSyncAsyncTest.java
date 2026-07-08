@@ -1,7 +1,7 @@
-package com.together.buytogether.post.service;
+package com.together.buytogether.product.service;
 
 import static com.together.buytogether.member.domain.MemberFixture.*;
-import static com.together.buytogether.post.domain.PostFixture.*;
+import static com.together.buytogether.product.domain.ProductFixture.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,32 +18,32 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
-import com.together.buytogether.post.domain.Post;
-import com.together.buytogether.post.domain.PostLikeRepository;
-import com.together.buytogether.post.domain.PostRepository;
+import com.together.buytogether.product.domain.Product;
+import com.together.buytogether.product.domain.ProductLikeRepository;
+import com.together.buytogether.product.domain.ProductRepository;
 
 @SpringBootTest
-public class PostLikeSyncAsyncTest {
+public class ProductLikeSyncAsyncTest {
 
 	List<Long> memberIds = new ArrayList<>();
-	Long postId;
+	Long productId;
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
-	private PostRepository postRepository;
+	private ProductRepository productRepository;
 	@Autowired
-	private PostLikeRepository postLikeRepository;
+	private ProductLikeRepository productLikeRepository;
 	@Autowired
 	private AsyncLikeService asyncLikeService;
 	@Autowired
-	private PostService postService;
+	private ProductService productService;
 
 	@BeforeEach
 	void setup() {
 		Member member = memberRepository.save(aMember().build());
 		memberIds.add(member.getMemberId());
-		Post post = aPost().member(member).build();
-		postId = postRepository.save(post).getPostId();
+		Product product = aProduct().member(member).build();
+		productId = productRepository.save(product).getProductId();
 		for (int i = 0; i < 99; i++) {
 			member = memberRepository.save(aMember().email("kimsw" + i + "@gmail.com").build());
 			memberIds.add(member.getMemberId());
@@ -60,7 +60,7 @@ public class PostLikeSyncAsyncTest {
 		for (Long memberId : memberIds) {
 			executorService.execute(() -> {
 				try {
-					postService.likePost(memberId, postId);
+					productService.likeProduct(memberId, productId);
 				} catch (CustomException e) {
 					e.printStackTrace();
 				} finally {
@@ -85,7 +85,7 @@ public class PostLikeSyncAsyncTest {
 		for (Long memberId : memberIds) {
 			executorService.execute(() -> {
 				try {
-					asyncLikeService.enqueueLike(memberId, postId);
+					asyncLikeService.enqueueLike(memberId, productId);
 				} catch (CustomException e) {
 					e.printStackTrace();
 				} finally {
@@ -104,7 +104,7 @@ public class PostLikeSyncAsyncTest {
 	@DisplayName("비동기")
 	void duplicate() throws InterruptedException {
 		long start = System.currentTimeMillis();
-		Long postId = 1L;
+		Long productId = 1L;
 		int threadCount = 100;
 		ExecutorService executorService = Executors.newFixedThreadPool(31);
 		CountDownLatch countDownLatch = new CountDownLatch(threadCount);
@@ -115,7 +115,7 @@ public class PostLikeSyncAsyncTest {
 		for (Long memberId : memberIds) {
 			executorService.execute(() -> {
 				try {
-					asyncLikeService.enqueueLike(memberId, postId);
+					asyncLikeService.enqueueLike(memberId, productId);
 				} catch (CustomException e) {
 					e.printStackTrace();
 				} finally {
@@ -132,6 +132,6 @@ public class PostLikeSyncAsyncTest {
 
 	@Test
 	void delete() {
-		postLikeRepository.deleteAll();
+		productLikeRepository.deleteAll();
 	}
 }

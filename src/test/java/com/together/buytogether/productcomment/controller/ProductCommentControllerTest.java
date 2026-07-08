@@ -1,9 +1,9 @@
-package com.together.buytogether.postcomment.controller;
+package com.together.buytogether.productcomment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.together.buytogether.member.domain.SessionConst;
-import com.together.buytogether.postcomment.dto.request.CommentDTO;
-import com.together.buytogether.postcomment.service.PostCommentService;
+import com.together.buytogether.productcomment.dto.request.CommentDTO;
+import com.together.buytogether.productcomment.service.ProductCommentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("PostComment Controller 테스트")
-@WebMvcTest(controllers = PostCommentController.class)
+@DisplayName("ProductComment Controller 테스트")
+@WebMvcTest(controllers = ProductCommentController.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PostCommentControllerTest {
-    Long postId;
+public class ProductCommentControllerTest {
+    Long productId;
     Long commentId;
     Long memberId;
     @Autowired
@@ -31,11 +31,11 @@ public class PostCommentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private PostCommentService postCommentService;
+    private ProductCommentService productCommentService;
 
     @BeforeEach
     void setUp() {
-        postId = 1L;
+        productId = 1L;
         commentId = 1L;
         memberId = 1L;
     }
@@ -45,27 +45,27 @@ public class PostCommentControllerTest {
     void registerCommentSuccess() throws Exception {
         CommentDTO commentDTO = new CommentDTO("content");
 
-        mockMvc.perform(post("/posts/{postId}/comments", postId)
+        mockMvc.perform(post("/products/{productId}/comments", productId)
                         .content(objectMapper.writeValueAsString(commentDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .sessionAttr(SessionConst.LOGIN_MEMBER, memberId))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(log());
 
-        then(postCommentService).should().registerComment(memberId, postId, commentDTO);
+        then(productCommentService).should().registerComment(memberId, productId, commentDTO);
 
     }
 
     @Test
     @DisplayName("댓글을 삭제할 수 있다")
-    void deletePostCommentSuccess() throws Exception {
+    void deleteProductCommentSuccess() throws Exception {
 
-        mockMvc.perform(delete("/posts/{postId}/comments/{commentId}", postId, commentId)
+        mockMvc.perform(delete("/products/{productId}/comments/{commentId}", productId, commentId)
                         .sessionAttr(SessionConst.LOGIN_MEMBER, 1L))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(log());
 
-        then(postCommentService).should().deleteComment(memberId, commentId);
+        then(productCommentService).should().deleteComment(memberId, commentId);
 
     }
 
@@ -74,42 +74,42 @@ public class PostCommentControllerTest {
     void updateCommentSuccess() throws Exception {
         CommentDTO commentDTO = new CommentDTO("content");
 
-        mockMvc.perform(put("/posts/{postId}/comments/{commentId}", postId, commentId)
+        mockMvc.perform(put("/products/{productId}/comments/{commentId}", productId, commentId)
                         .content(objectMapper.writeValueAsString(commentDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .sessionAttr(SessionConst.LOGIN_MEMBER, 1L))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(log());
 
-        then(postCommentService).should().updateComment(memberId, commentId, commentDTO);
+        then(productCommentService).should().updateComment(memberId, commentId, commentDTO);
 
     }
 
     @Test
     @DisplayName("특정 댓글을 가져올 수 있다")
-    void getPostCommentSuccess() throws Exception {
+    void getProductCommentSuccess() throws Exception {
 
 
-        mockMvc.perform(get("/posts/{postId}/comments/{commentId}", postId, commentId)
+        mockMvc.perform(get("/products/{productId}/comments/{commentId}", productId, commentId)
                         .sessionAttr(SessionConst.LOGIN_MEMBER, 1L))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(log());
 
-        then(postCommentService).should().getPostComment(postId);
+        then(productCommentService).should().getProductComment(productId);
 
     }
 
     @Test
-    @DisplayName("게시글에 있는 모든 댓글을 가져올 수 있다")
-    void getAllPostCommentsSuccess() throws Exception {
+    @DisplayName("상품에 있는 모든 댓글을 가져올 수 있다")
+    void getAllProductCommentsSuccess() throws Exception {
 
 
-        mockMvc.perform(get("/posts/{postId}/comments", postId)
+        mockMvc.perform(get("/products/{productId}/comments", productId)
                         .sessionAttr(SessionConst.LOGIN_MEMBER, 1L))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(log());
 
-        then(postCommentService).should().getPostComments(postId);
+        then(productCommentService).should().getProductComments(productId);
 
     }
 }
