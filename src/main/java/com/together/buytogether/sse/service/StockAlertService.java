@@ -13,7 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.together.buytogether.post.domain.Product;
+import com.together.buytogether.product.domain.Product;
 import com.together.buytogether.sse.dto.StockAlertDTO;
 
 import lombok.RequiredArgsConstructor;

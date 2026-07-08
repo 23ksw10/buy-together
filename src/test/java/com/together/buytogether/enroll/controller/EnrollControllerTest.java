@@ -33,13 +33,13 @@ public class EnrollControllerTest {
 	private MockMvc mockMvc;
 	@Autowired
 	private ObjectMapper objectMapper;
-	Long postId;
+	Long productId;
 	Long memberId;
 	MockHttpSession mockSession;
 
 	@BeforeEach
 	void setUp() {
-		postId = 1L;
+		productId = 1L;
 		memberId = 1L;
 		mockSession = new MockHttpSession();
 		mockSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
@@ -92,7 +92,7 @@ public class EnrollControllerTest {
 	void cannotCancelBuyingWhenNotLoggedIn() throws Exception {
 		Long enrollId = 1L;
 		mockMvc.perform(delete("/enrolls/{enrollId}", enrollId)
-				.content(objectMapper.writeValueAsString(new CancelEnrollDTO(postId)))
+				.content(objectMapper.writeValueAsString(new CancelEnrollDTO(productId)))
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.message").value("작성자만 가능한 요청입니다"))

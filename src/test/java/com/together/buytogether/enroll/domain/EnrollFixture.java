@@ -2,8 +2,8 @@ package com.together.buytogether.enroll.domain;
 
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberFixture;
-import com.together.buytogether.post.domain.Product;
-import com.together.buytogether.post.domain.ProductFixture;
+import com.together.buytogether.product.domain.Product;
+import com.together.buytogether.product.domain.ProductFixture;
 
 public class EnrollFixture {
 	private Member member = MemberFixture.aMember().build();

@@ -19,14 +19,14 @@ public enum ErrorCode {
 
 	/* 404 NOT_FOUND : 요청 대상이 존재하지 않을 때 */
 	MEMBER_NOT_FOUND(NOT_FOUND, "존재하지 않는 멤버입니다"),
-	POST_NOT_FOUND(NOT_FOUND, "해당 게시글이 존재하지 않습니다"),
 	COMMENT_NOT_FOUND(NOT_FOUND, "해당 댓글이 존재하지 않습니다"),
 	ENROLL_NOT_FOUND(NOT_FOUND, "등록 정보가 존재하지 않습니다"),
 	PRODUCT_NOT_FOUND(NOT_FOUND, "판매 상품이 존재하지 않습니다"),
 
 	/* 409 CONFLICT : 서버의 상태와 충돌하는 경우 */
 	MEMBER_ALREADY_EXIST(CONFLICT, "이미 존재하는 회원입니다"),
-	POST_CLOSED(CONFLICT, "이미 마감된 게시글입니다"),
+	PRODUCT_CLOSED(CONFLICT, "이미 마감된 상품입니다"),
+	PRODUCT_SOLD_OUT(CONFLICT, "상품 재고가 모두 소진되었습니다"),
 	PRODUCT_QUANTITY_EXCEEDED(CONFLICT, "구매 한도가 초과 되었습니다"),
 	ENROLL_ALREADY_DONE(CONFLICT, "이미 구매에 참여했습니다"),
 	INVALID_QUANTITY(CONFLICT, "구매량은 음수가 될 수 없습니다"),

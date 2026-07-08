@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 
 public enum CacheName {
 
-	POST_COMPOSITE_CACHE(
-		CacheKey.POSTS,
+	PRODUCT_COMPOSITE_CACHE(
+		CacheKey.PRODUCTS,
 		Duration.ofDays(1),
 		CacheType.COMPOSITE
 	),
 
-	POST_REDIS_CACHE(
-		CacheKey.POSTS_REDIS,
+	PRODUCT_REDIS_CACHE(
+		CacheKey.PRODUCTS_REDIS,
 		Duration.ofSeconds(20),
 		CacheType.GLOBAL
 	);
@@ -62,4 +62,3 @@ public enum CacheName {
 		return cacheType;
 	}
 }
-
