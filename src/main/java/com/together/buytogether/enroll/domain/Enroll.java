@@ -8,12 +8,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.post.domain.Product;
+import com.together.buytogether.product.domain.Product;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,7 +41,7 @@ public class Enroll {
 	@JoinColumn(name = "member_id")
 	private Member member;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id")
+	@JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Product product;
 
 	@Column(name = "quantity")

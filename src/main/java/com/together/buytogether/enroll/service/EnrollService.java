@@ -16,7 +16,7 @@ import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
 import com.together.buytogether.member.domain.Member;
-import com.together.buytogether.post.domain.Product;
+import com.together.buytogether.product.domain.Product;
 import com.together.buytogether.sse.service.StockAlertService;
 
 @Service
@@ -50,12 +50,12 @@ public class EnrollService {
 		Enroll enroll = new Enroll(member, product, joinEnrollDTO.quantity());
 		Enroll savedEnroll = enrollRepository.save(enroll);
 		return ResponseDTO.successResult(JoinEnrollResponseDTO.builder()
-			.postId(product.getPost().getPostId())
-			.postTitle(product.getPost().getTitle())
+			.productId(product.getProductId())
+			.productTitle(product.getTitle())
 			.enrollId(savedEnroll.getEnrollId())
 			.memberName(member.getName())
 			.memberId(memberId)
-			.sellerName(product.getPost().getMember().getName())
+			.sellerName(product.getMember().getName())
 			.joinedAt(savedEnroll.getCreatedAt())
 			.build());
 	}

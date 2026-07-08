@@ -2,8 +2,7 @@ package com.together.buytogether.enroll.domain;
 
 import static com.together.buytogether.enroll.domain.QEnroll.*;
 import static com.together.buytogether.member.domain.QMember.*;
-import static com.together.buytogether.post.domain.QPost.*;
-import static com.together.buytogether.post.domain.QProduct.*;
+import static com.together.buytogether.product.domain.QProduct.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,16 +36,13 @@ public class CustomizeEnrollRepositoryImpl implements CustomizeEnrollRepository 
 				member.email.as("memberEmail"),
 				product.productId.as("productId"),
 				product.price.as("productPrice"),
-				post.postId.as("postId"),
-				post.title.as("postTitle")))
+				product.title.as("productTitle")))
 			.from(enroll)
 			.join(enroll.member, member)
 			.join(enroll.product, product)
-			.join(product.post, post)
 			.where(enroll.member.memberId.eq(memberId)
 				.and(enroll.createdAt.goe(sixMonthsAgo)))
 			.orderBy(enroll.createdAt.desc())
 			.fetch();
-
 	}
 }
