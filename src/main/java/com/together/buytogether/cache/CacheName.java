@@ -25,6 +25,12 @@ public enum CacheName {
 		CacheKey.TRENDING_REDIS,
 		Duration.ofSeconds(30),
 		CacheType.GLOBAL
+	),
+
+	TRENDING_COMPOSITE_CACHE(
+		CacheKey.TRENDING_COMPOSITE,
+		Duration.ofSeconds(30),
+		CacheType.COMPOSITE
 	);
 
 	private static final Map<String, CacheName> CACHE_NAME_MAP;

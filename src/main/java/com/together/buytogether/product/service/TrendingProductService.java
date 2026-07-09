@@ -38,6 +38,14 @@ public class TrendingProductService {
 		return toResponse(trendingProductRepository.findTrendingTop10());
 	}
 
+	// v4: Caffeine(L1) + Redis(L2) 2계층 캐시 — L1 히트 시 네트워크 왕복 제거, L2 히트 시 L1 재적재
+	// CompositeCache의 get(key, valueLoader)가 L1만 채우므로 sync=true는 사용하지 않는다
+	@Cacheable(cacheNames = CacheKey.TRENDING_COMPOSITE, key = "'top10'")
+	@Transactional(readOnly = true)
+	public List<TrendingProductResponseDTO> getTrendingV4() {
+		return toResponse(trendingProductRepository.findTrendingTop10());
+	}
+
 	private List<TrendingProductResponseDTO> toResponse(List<TrendingProductRow> rows) {
 		return rows.stream()
 			.map(TrendingProductResponseDTO::from)

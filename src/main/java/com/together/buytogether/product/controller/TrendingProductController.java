@@ -38,4 +38,10 @@ public class TrendingProductController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ResponseDTO.successResult(trendingProductService.getTrendingV3()));
 	}
+
+	@GetMapping("/v4")
+	public ResponseEntity<ResponseDTO<List<TrendingProductResponseDTO>>> getTrendingV4() {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ResponseDTO.successResult(trendingProductService.getTrendingV4()));
+	}
 }
