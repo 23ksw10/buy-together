@@ -2,9 +2,11 @@ package com.together.buytogether.product.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.together.buytogether.cache.CacheKey;
 import com.together.buytogether.product.domain.TrendingProductRepository;
 import com.together.buytogether.product.domain.TrendingProductRow;
 import com.together.buytogether.product.dto.response.TrendingProductResponseDTO;
@@ -26,6 +28,13 @@ public class TrendingProductService {
 	// v2: v1과 동일한 쿼리 + 인덱스 (enroll.product_id, product_like(product_id, like_status))
 	@Transactional(readOnly = true)
 	public List<TrendingProductResponseDTO> getTrendingV2() {
+		return toResponse(trendingProductRepository.findTrendingTop10());
+	}
+
+	// v3: Redis 단일 캐시 (TTL 30초) — 만료 순간 동시 요청이 모두 DB로 몰리는 한계 존재
+	@Cacheable(cacheNames = CacheKey.TRENDING_REDIS, key = "'top10'", cacheManager = "redisCacheManager")
+	@Transactional(readOnly = true)
+	public List<TrendingProductResponseDTO> getTrendingV3() {
 		return toResponse(trendingProductRepository.findTrendingTop10());
 	}
 
