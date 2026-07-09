@@ -1,6 +1,7 @@
 package com.together.buytogether.product.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -61,9 +62,11 @@ public class TrendingProductService {
 		return toResponse(trendingProductRepository.findTrendingTop10());
 	}
 
+	// Stream.toList()가 반환하는 java.util 불변 리스트(final 타입)는 GenericJackson2JsonRedisSerializer가
+	// 타입 정보 없이 직렬화해 역직렬화에 실패하므로, 타입 래퍼가 기록되는 ArrayList로 수집한다
 	private List<TrendingProductResponseDTO> toResponse(List<TrendingProductRow> rows) {
 		return rows.stream()
 			.map(TrendingProductResponseDTO::from)
-			.toList();
+			.collect(Collectors.toList());
 	}
 }
