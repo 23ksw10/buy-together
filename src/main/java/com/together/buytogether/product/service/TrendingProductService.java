@@ -17,9 +17,15 @@ public class TrendingProductService {
 		this.trendingProductRepository = trendingProductRepository;
 	}
 
-	// v1: 베이스라인 — 조인/집계 쿼리를 매 요청마다 실행
+	// v1: 베이스라인 — 조인/집계 쿼리를 매 요청마다 실행 (인덱스 미사용 실행 계획 고정)
 	@Transactional(readOnly = true)
 	public List<TrendingProductResponseDTO> getTrendingV1() {
+		return toResponse(trendingProductRepository.findTrendingTop10IgnoringIndexes());
+	}
+
+	// v2: v1과 동일한 쿼리 + 인덱스 (enroll.product_id, product_like(product_id, like_status))
+	@Transactional(readOnly = true)
+	public List<TrendingProductResponseDTO> getTrendingV2() {
 		return toResponse(trendingProductRepository.findTrendingTop10());
 	}
 
