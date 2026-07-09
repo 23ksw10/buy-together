@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.together.buytogether.annotation.SingleFlightCacheable;
 import com.together.buytogether.cache.CacheKey;
 import com.together.buytogether.product.domain.TrendingProductRepository;
 import com.together.buytogether.product.domain.TrendingProductRow;
@@ -43,6 +44,20 @@ public class TrendingProductService {
 	@Cacheable(cacheNames = CacheKey.TRENDING_COMPOSITE, key = "'top10'")
 	@Transactional(readOnly = true)
 	public List<TrendingProductResponseDTO> getTrendingV4() {
+		return toResponse(trendingProductRepository.findTrendingTop10());
+	}
+
+	// v5: 싱글플라이트 — 캐시 만료 시 한 요청만 DB를 조회하고 나머지는 대기(스탬피드 방지),
+	// Redis TTL의 80% 경과 후 히트 시 비동기 갱신(stale-while-revalidate)
+	@SingleFlightCacheable(
+		cacheName = CacheKey.TRENDING_SINGLE_FLIGHT,
+		key = "'top10'",
+		localTimeToLiveMillis = 5_000,
+		redisTimeToLiveMillis = 30_000,
+		decisionForUpdate = 80
+	)
+	@Transactional(readOnly = true)
+	public List<TrendingProductResponseDTO> getTrendingV5() {
 		return toResponse(trendingProductRepository.findTrendingTop10());
 	}
 
