@@ -11,11 +11,9 @@ import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.product.domain.Product;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +27,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "enroll", indexes = @Index(name = "idx_enroll_product_id", columnList = "product_id"))
+@Table(name = "enroll", indexes = {
+	@Index(name = "idx_enroll_product_id", columnList = "product_id"),
+	@Index(name = "idx_enroll_product_id_created_at", columnList = "product_id, created_at")
+})
 @NoArgsConstructor
 @Comment("구매 참여")
 @EntityListeners(AuditingEntityListener.class)
@@ -42,12 +43,13 @@ public class Enroll {
 	@JoinColumn(name = "member_id")
 	private Member member;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	@JoinColumn(name = "product_id")
 	private Product product;
 
 	@Column(name = "quantity")
 	private Long quantity;
 	@CreatedDate
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
 	@Builder
