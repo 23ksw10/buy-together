@@ -8,7 +8,7 @@ public class MemberFixture {
 
     private String name = "name";
 
-    private String email = "ksw@gmail.com";
+    private String email = "kswtest@gmail.com";
 
     private String password = "password";
 
@@ -16,7 +16,6 @@ public class MemberFixture {
 
     private Gender gender = Gender.MALE;
     private AddressFixture addressFixture = AddressFixture.aAddress();
-
 
     public static MemberFixture aMember() {
         return new MemberFixture();
@@ -63,13 +62,13 @@ public class MemberFixture {
 
     public Member build() {
         return Member.builder()
-                .name(name)
-                .email(email)
-                .password(HashingUtil.encrypt(password))
-                .phoneNumber(phoneNumber)
-                .gender(gender)
-                .address(addressFixture.build())
-                .build();
+            .name(name)
+            .email(email)
+            .password(HashingUtil.encrypt(password))
+            .phoneNumber(phoneNumber)
+            .gender(gender)
+            .address(addressFixture.build())
+            .build();
     }
 
 }
