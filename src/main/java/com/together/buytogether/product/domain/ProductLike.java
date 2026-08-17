@@ -1,15 +1,23 @@
 package com.together.buytogether.product.domain;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.together.buytogether.member.domain.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -20,8 +28,15 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "product_like")
+@Table(name = "product_like", indexes = {
+	@Index(name = "idx_product_like_product_id", columnList = "product_id"),
+	@Index(
+		name = "idx_product_like_product_id_like_status_updated_at",
+		columnList = "product_id, like_status, updated_at"
+	)
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class ProductLike {
 	@Id
 	@Column(name = "product_like_id")
@@ -39,6 +54,15 @@ public class ProductLike {
 	@Column(name = "like_status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ProductLikeStatus productLikeStatus;
+
+	@CreatedDate
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
+	// 좋아요는 행 삭제 대신 상태 토글이므로, 최근 좋아요 활동(재활성화 포함)은 updated_at으로 판별한다
+	@LastModifiedDate
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
 
 	@Builder
 	public ProductLike(Member member, Product product, ProductLikeStatus productLikeStatus) {
