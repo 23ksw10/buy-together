@@ -16,6 +16,9 @@ public interface EnrollRepository extends JpaRepository<Enroll, Long>, Customize
 	@Query("SELECT e FROM Enroll e JOIN FETCH e.member m JOIN FETCH e.product p WHERE m.memberId = :memberId AND p.productId = :productId")
 	Optional<Enroll> findByMemberIdAndProductId(@Param("memberId") Long memberId, @Param("productId") Long productId);
 
+	@Query("SELECT e.product.productId FROM Enroll e WHERE e.enrollId = :enrollId")
+	Optional<Long> findProductIdByEnrollId(@Param("enrollId") Long enrollId);
+
 	default Enroll getEnroll(Long enrollId) {
 		return findByEnrollId(enrollId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ENROLL_NOT_FOUND));

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.together.buytogether.annotation.LoginRequired;
 import com.together.buytogether.annotation.LoginUser;
 import com.together.buytogether.common.utils.ResponseDTO;
-import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
@@ -37,10 +36,9 @@ public class EnrollController {
 	@LoginRequired
 	public ResponseEntity<ResponseDTO<String>> cancel(
 		@LoginUser Long memberId,
-		@PathVariable Long enrollId,
-		CancelEnrollDTO cancelEnrollDTO) {
+		@PathVariable Long enrollId) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(enrollFacade.cancelBuying(memberId, cancelEnrollDTO, enrollId));
+			.body(enrollFacade.cancelBuying(memberId, enrollId));
 	}
 
 	@PostMapping()

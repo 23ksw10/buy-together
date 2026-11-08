@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.together.buytogether.common.lock.DistributedLockFacade;
 import com.together.buytogether.common.utils.ResponseDTO;
-import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.dto.response.JoinEnrollResponseDTO;
 import com.together.buytogether.enroll.dto.response.RecentEnrollInfoDto;
@@ -25,7 +24,7 @@ public class EnrollFacade {
 	}
 
 	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
-		return distributedLockFacade.executeWithLock("enroll_lock_" + joinEnrollDTO.productId(),
+		return distributedLockFacade.executeWithLock(productLockKey(joinEnrollDTO.productId()),
 			LOCK_WAIT_MILLI_SECOND,
 			LOCK_LEASE_MILLI_SECOND,
 			() -> enrollService.joinBuying(memberId, joinEnrollDTO));
@@ -48,8 +47,10 @@ public class EnrollFacade {
 		}
 	}
 
-	public ResponseDTO<String> cancelBuying(Long memberId, CancelEnrollDTO cancelEnrollDTO, Long enrollId) {
-		return distributedLockFacade.executeWithLock("enroll_lock_" + cancelEnrollDTO.productId(),
+	public ResponseDTO<String> cancelBuying(Long memberId, Long enrollId) {
+		// 락 키는 실제로 수정될 상품에서 얻는다. 참여의 상품은 바뀌지 않으므로 락 밖에서 조회해도 안전하다.
+		Long productId = enrollService.getEnrolledProductId(enrollId);
+		return distributedLockFacade.executeWithLock(productLockKey(productId),
 			LOCK_WAIT_MILLI_SECOND,
 			LOCK_LEASE_MILLI_SECOND,
 			() -> enrollService.cancelBuying(memberId, enrollId));
@@ -57,5 +58,10 @@ public class EnrollFacade {
 
 	public ResponseDTO<List<RecentEnrollInfoDto>> getRecentEnrolls(Long memberId) {
 		return enrollService.getRecentEnrolls(memberId);
+	}
+
+	// 참여와 취소는 같은 상품의 판매 수량을 수정하므로 반드시 같은 락 키를 사용해야 한다
+	private static String productLockKey(Long productId) {
+		return "enroll_lock_" + productId;
 	}
 }

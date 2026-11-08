@@ -28,7 +28,6 @@ import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
-import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.product.domain.Product;
@@ -122,8 +121,7 @@ public class EnrollConcurrencyTest {
 				try {
 					Enroll savedEnroll = enrollRepository.save(new Enroll(savedMember, product, 1L));
 					createdEnrollIds.add(savedEnroll.getEnrollId());
-					enrollFacade.cancelBuying(savedMember.getMemberId(), new CancelEnrollDTO(product.getProductId()),
-						savedEnroll.getEnrollId());
+					enrollFacade.cancelBuying(savedMember.getMemberId(), savedEnroll.getEnrollId());
 				} catch (CustomException e) {
 					e.printStackTrace();
 				} finally {
@@ -166,9 +164,8 @@ public class EnrollConcurrencyTest {
 			submitAfterStart(executorService, startLatch, doneLatch, joinSuccessCount, () ->
 				enrollFacade.joinBuying(joiner.getMemberId(),
 					aJoinEnrollDTOFixture().productId(productId).quantity(1L).build()));
-			// 실제 DELETE 요청에서는 productId가 바인딩되지 않아 null로 들어온다
 			submitAfterStart(executorService, startLatch, doneLatch, cancelSuccessCount, () ->
-				enrollFacade.cancelBuying(canceler.getMemberId(), new CancelEnrollDTO(null), enrollId));
+				enrollFacade.cancelBuying(canceler.getMemberId(), enrollId));
 		}
 		startLatch.countDown();
 		doneLatch.await();

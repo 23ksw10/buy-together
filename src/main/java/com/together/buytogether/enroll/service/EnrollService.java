@@ -69,6 +69,11 @@ public class EnrollService {
 		return ResponseDTO.successResult("구매가 취소되셨습니다");
 	}
 
+	public Long getEnrolledProductId(Long enrollId) {
+		return enrollRepository.findProductIdByEnrollId(enrollId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ENROLL_NOT_FOUND));
+	}
+
 	public ResponseDTO<List<RecentEnrollInfoDto>> getRecentEnrolls(Long memberId) {
 		return ResponseDTO.successResult(enrollRepository.getRecentEnrolls(memberId));
 	}

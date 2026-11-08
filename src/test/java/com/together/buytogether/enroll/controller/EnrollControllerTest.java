@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.together.buytogether.common.utils.ResponseDTO;
-import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.service.EnrollFacade;
 import com.together.buytogether.member.domain.SessionConst;
@@ -33,13 +32,11 @@ public class EnrollControllerTest {
 	private MockMvc mockMvc;
 	@Autowired
 	private ObjectMapper objectMapper;
-	Long productId;
 	Long memberId;
 	MockHttpSession mockSession;
 
 	@BeforeEach
 	void setUp() {
-		productId = 1L;
 		memberId = 1L;
 		mockSession = new MockHttpSession();
 		mockSession.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
@@ -74,11 +71,9 @@ public class EnrollControllerTest {
 	@DisplayName("구매를 취소할 수 있다")
 	void cancelBuying() throws Exception {
 		Long enrollId = 1L;
-		given(enrollFacade.cancelBuying(any(Long.class), any(CancelEnrollDTO.class), any(Long.class))).willReturn(
+		given(enrollFacade.cancelBuying(any(Long.class), any(Long.class))).willReturn(
 			ResponseDTO.successResult("구매가 취소되셨습니다"));
 		mockMvc.perform(delete("/enrolls/{enrollId}", enrollId)
-				.content(objectMapper.writeValueAsString(new CancelEnrollDTO(1L)))
-				.contentType(MediaType.APPLICATION_JSON)
 				.session(mockSession))
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.status").value("SUCCESS"))
@@ -91,9 +86,7 @@ public class EnrollControllerTest {
 	@DisplayName("로그인 되어있지 않다면 구매취소를 할 수 없다")
 	void cannotCancelBuyingWhenNotLoggedIn() throws Exception {
 		Long enrollId = 1L;
-		mockMvc.perform(delete("/enrolls/{enrollId}", enrollId)
-				.content(objectMapper.writeValueAsString(new CancelEnrollDTO(productId)))
-				.contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/enrolls/{enrollId}", enrollId))
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.message").value("작성자만 가능한 요청입니다"))
 			.andDo(log());
