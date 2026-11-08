@@ -16,18 +16,24 @@ public class DistributedLockFacade {
 
 	public <T> T executeWithLock(String lockName, long waitMilliSecond, long leaseMilliSecond, Supplier<T> action) {
 		RLock lock = redissonClient.getLock(lockName);
+		if (!tryLock(lock, waitMilliSecond, leaseMilliSecond)) {
+			throw new IllegalStateException("락 획득 실패" + lockName);
+		}
 		try {
-			if (!lock.tryLock(waitMilliSecond, leaseMilliSecond, TimeUnit.MILLISECONDS)) {
-				throw new IllegalStateException("락 획득 실패" + lockName);
-			}
 			return action.get();
+		} finally {
+			if (lock.isHeldByCurrentThread()) {
+				lock.unlock();
+			}
+		}
+	}
+
+	private boolean tryLock(RLock lock, long waitMilliSecond, long leaseMilliSecond) {
+		try {
+			return lock.tryLock(waitMilliSecond, leaseMilliSecond, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("Lock interrupted", e);
-		} finally {
-			if (lock.isLocked() || lock.isHeldByCurrentThread()) {
-				lock.unlock();
-			}
 		}
 	}
 }
