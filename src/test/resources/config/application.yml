@@ -1,0 +1,9 @@
+# 테스트는 로컬 개발 DB(시드 데이터 포함)가 아닌, Testcontainers가 띄우는 일회용 MySQL을 사용한다.
+# classpath:/config/application.yml은 루트 application.yml과 함께 로드되고 같은 키를 덮어쓰므로
+# 여기서는 DB 접속 정보만 바꾼다. (Redis는 로컬 docker-compose의 Redis를 그대로 사용)
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mysql:8.0:///bt
+    username: test
+    password: test

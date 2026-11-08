@@ -12,7 +12,3 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-  # Clear the base application.yml's redis password — the Testcontainers Redis has no auth,
-  # so inheriting a password would make Lettuce send AUTH and fail to connect.
-  redis:
-    password:
