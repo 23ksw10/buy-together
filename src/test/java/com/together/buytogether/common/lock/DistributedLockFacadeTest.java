@@ -1,8 +1,11 @@
 package com.together.buytogether.common.lock;
 
+import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -14,7 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -22,6 +29,12 @@ class DistributedLockFacadeTest {
 
 	@Autowired
 	DistributedLockFacade distributedLockFacade;
+
+	@Value("${spring.redis.host}")
+	String redisHost;
+
+	@Value("${spring.redis.port}")
+	int redisPort;
 
 	@Test
 	@DisplayName("다른 스레드가 락을 잡고 있어 획득에 실패하면 락 획득 실패 예외가 그대로 전달된다")
@@ -33,14 +46,14 @@ class DistributedLockFacadeTest {
 
 		try {
 			Future<?> holder = executorService.submit(() ->
-				distributedLockFacade.executeWithLock(lockName, 1000, 10_000, () -> {
+				distributedLockFacade.executeWithLock(lockName, 1000, () -> {
 					holderAcquired.countDown();
-					awaitQuietly(releaseHolder);
+					awaitUninterruptibly(releaseHolder);
 					return null;
 				}));
 			assertThat(holderAcquired.await(5, TimeUnit.SECONDS)).isTrue();
 
-			assertThatThrownBy(() -> distributedLockFacade.executeWithLock(lockName, 100, 3000, () -> "never"))
+			assertThatThrownBy(() -> distributedLockFacade.executeWithLock(lockName, 100, () -> "never"))
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessageStartingWith("락 획득 실패");
 
@@ -53,50 +66,35 @@ class DistributedLockFacadeTest {
 	}
 
 	@Test
-	@DisplayName("작업이 끝나기 전에는 다른 스레드가 같은 락으로 진입하지 않는다")
+	@DisplayName("작업이 락의 최초 만료 시간보다 길어져도 끝나기 전에는 다른 스레드가 같은 락으로 진입하지 않는다")
 	void lockIsHeldUntilActionCompletes() throws Exception {
+		// watchdog timeout을 1초로 줄인 클라이언트로, 3초 작업 동안 락이 연장되어야만 통과하게 한다
+		Config config = new Config();
+		config.setLockWatchdogTimeout(1000);
+		config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort);
+		RedissonClient redissonClient = Redisson.create(config);
+		DistributedLockFacade facade = new DistributedLockFacade(redissonClient);
+
 		String lockName = "lock-test-" + UUID.randomUUID();
 		AtomicInteger inFlight = new AtomicInteger();
 		AtomicInteger maxInFlight = new AtomicInteger();
-		CountDownLatch start = new CountDownLatch(1);
 		ExecutorService executorService = Executors.newFixedThreadPool(2);
+		Callable<Object> task = () -> facade.executeWithLock(lockName, 5000, () -> {
+			maxInFlight.accumulateAndGet(inFlight.incrementAndGet(), Math::max);
+			sleepUninterruptibly(3, TimeUnit.SECONDS);
+			inFlight.decrementAndGet();
+			return null;
+		});
 
-		// lease(200ms)보다 긴 작업(600ms)을 두 스레드가 같은 락으로 실행한다
-		Callable<Object> task = () -> {
-			start.await();
-			return distributedLockFacade.executeWithLock(lockName, 2000, 200, () -> {
-				maxInFlight.accumulateAndGet(inFlight.incrementAndGet(), Math::max);
-				sleepQuietly(600);
-				inFlight.decrementAndGet();
-				return null;
-			});
-		};
 		try {
-			Future<Object> first = executorService.submit(task);
-			Future<Object> second = executorService.submit(task);
-			start.countDown();
-			first.get(5, TimeUnit.SECONDS);
-			second.get(5, TimeUnit.SECONDS);
+			for (Future<Object> future : executorService.invokeAll(List.of(task, task), 10, TimeUnit.SECONDS)) {
+				future.get();
+			}
 		} finally {
 			executorService.shutdown();
+			redissonClient.shutdown();
 		}
 
 		assertThat(maxInFlight.get()).isEqualTo(1);
-	}
-
-	private static void sleepQuietly(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-	}
-
-	private static void awaitQuietly(CountDownLatch latch) {
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
 	}
 }

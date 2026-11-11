@@ -26,7 +26,6 @@ public class EnrollFacade {
 	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
 		return distributedLockFacade.executeWithLock(productLockKey(joinEnrollDTO.productId()),
 			LOCK_WAIT_MILLI_SECOND,
-			LOCK_LEASE_MILLI_SECOND,
 			() -> enrollService.joinBuying(memberId, joinEnrollDTO));
 	}
 
@@ -52,7 +51,6 @@ public class EnrollFacade {
 		Long productId = enrollService.getEnrolledProductId(enrollId);
 		return distributedLockFacade.executeWithLock(productLockKey(productId),
 			LOCK_WAIT_MILLI_SECOND,
-			LOCK_LEASE_MILLI_SECOND,
 			() -> enrollService.cancelBuying(memberId, enrollId));
 	}
 

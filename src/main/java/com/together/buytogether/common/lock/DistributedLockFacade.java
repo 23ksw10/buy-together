@@ -14,23 +14,21 @@ import lombok.RequiredArgsConstructor;
 public class DistributedLockFacade {
 	private final RedissonClient redissonClient;
 
-	public <T> T executeWithLock(String lockName, long waitMilliSecond, long leaseMilliSecond, Supplier<T> action) {
+	public <T> T executeWithLock(String lockName, long waitMilliSecond, Supplier<T> action) {
 		RLock lock = redissonClient.getLock(lockName);
-		if (!tryLock(lock, waitMilliSecond, leaseMilliSecond)) {
+		if (!tryLock(lock, waitMilliSecond)) {
 			throw new IllegalStateException("락 획득 실패" + lockName);
 		}
 		try {
 			return action.get();
 		} finally {
-			if (lock.isHeldByCurrentThread()) {
-				lock.unlock();
-			}
+			lock.unlock();
 		}
 	}
 
-	private boolean tryLock(RLock lock, long waitMilliSecond, long leaseMilliSecond) {
+	private boolean tryLock(RLock lock, long waitMilliSecond) {
 		try {
-			return lock.tryLock(waitMilliSecond, leaseMilliSecond, TimeUnit.MILLISECONDS);
+			return lock.tryLock(waitMilliSecond, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("Lock interrupted", e);
