@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,46 @@ class DistributedLockFacadeTest {
 		} finally {
 			releaseHolder.countDown();
 			executorService.shutdown();
+		}
+	}
+
+	@Test
+	@DisplayName("작업이 끝나기 전에는 다른 스레드가 같은 락으로 진입하지 않는다")
+	void lockIsHeldUntilActionCompletes() throws Exception {
+		String lockName = "lock-test-" + UUID.randomUUID();
+		AtomicInteger inFlight = new AtomicInteger();
+		AtomicInteger maxInFlight = new AtomicInteger();
+		CountDownLatch start = new CountDownLatch(1);
+		ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+		// lease(200ms)보다 긴 작업(600ms)을 두 스레드가 같은 락으로 실행한다
+		Callable<Object> task = () -> {
+			start.await();
+			return distributedLockFacade.executeWithLock(lockName, 2000, 200, () -> {
+				maxInFlight.accumulateAndGet(inFlight.incrementAndGet(), Math::max);
+				sleepQuietly(600);
+				inFlight.decrementAndGet();
+				return null;
+			});
+		};
+		try {
+			Future<Object> first = executorService.submit(task);
+			Future<Object> second = executorService.submit(task);
+			start.countDown();
+			first.get(5, TimeUnit.SECONDS);
+			second.get(5, TimeUnit.SECONDS);
+		} finally {
+			executorService.shutdown();
+		}
+
+		assertThat(maxInFlight.get()).isEqualTo(1);
+	}
+
+	private static void sleepQuietly(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
