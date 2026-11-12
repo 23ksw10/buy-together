@@ -1,5 +1,7 @@
 package com.together.buytogether.enroll.service;
 
+import static com.together.buytogether.common.lock.LockNumberConstants.LOCKED_TX_TIMEOUT_SECONDS;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class EnrollService {
 		this.stockAlertService = stockAlertService;
 	}
 
-	@Transactional
+	@Transactional(timeout = LOCKED_TX_TIMEOUT_SECONDS)
 	public ResponseDTO<JoinEnrollResponseDTO> joinBuying(Long memberId, JoinEnrollDTO joinEnrollDTO) {
 		Member member = commonMemberService.getMember(memberId);
 		Product product = commonProductService.getProduct(joinEnrollDTO.productId());
@@ -60,7 +62,7 @@ public class EnrollService {
 			.build());
 	}
 
-	@Transactional
+	@Transactional(timeout = LOCKED_TX_TIMEOUT_SECONDS)
 	public ResponseDTO<String> cancelBuying(Long memberId, Long enrollId) {
 		Enroll enroll = enrollRepository.getEnroll(enrollId);
 		validateCancellation(memberId, enroll);
