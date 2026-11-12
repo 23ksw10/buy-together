@@ -23,6 +23,9 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+
+import com.together.buytogether.common.error.CustomException;
 
 @SpringBootTest
 class DistributedLockFacadeTest {
@@ -37,7 +40,7 @@ class DistributedLockFacadeTest {
 	int redisPort;
 
 	@Test
-	@DisplayName("다른 스레드가 락을 잡고 있어 획득에 실패하면 락 획득 실패 예외가 그대로 전달된다")
+	@DisplayName("다른 스레드가 락을 잡고 있어 획득에 실패하면 일시적 처리 불가(503) 예외가 그대로 전달된다")
 	void lockAcquisitionFailureIsNotMaskedByUnlock() throws Exception {
 		String lockName = "lock-test-" + UUID.randomUUID();
 		CountDownLatch holderAcquired = new CountDownLatch(1);
@@ -53,8 +56,10 @@ class DistributedLockFacadeTest {
 				}));
 			assertThat(holderAcquired.await(5, TimeUnit.SECONDS)).isTrue();
 
+			// 같은 요청을 다시 보내면 성공할 수 있는 서버 쪽 사정이므로 503으로 응답해야 한다
 			assertThatThrownBy(() -> distributedLockFacade.executeWithLock(lockName, 100, () -> "never"))
-				.isInstanceOf(IllegalStateException.class)
+				.isInstanceOfSatisfying(CustomException.class, e ->
+					assertThat(e.getErrorCode().getHttpStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE))
 				.hasMessageStartingWith("락 획득 실패");
 
 			releaseHolder.countDown();
