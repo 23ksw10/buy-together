@@ -17,6 +17,8 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.utils.ResponseDTO;
 import com.together.buytogether.enroll.dto.request.JoinEnrollDTO;
 import com.together.buytogether.enroll.service.EnrollFacade;
@@ -53,6 +55,22 @@ public class EnrollControllerTest {
 			.andExpect(status().is2xxSuccessful())
 			.andDo(log());
 
+	}
+
+	@Test
+	@DisplayName("요청이 몰려 락을 얻지 못하면 503과 재시도 안내 메시지로 응답한다")
+	void joinBuyingReturns503WhenLockAcquisitionFails() throws Exception {
+		JoinEnrollDTO joinEnrollDTO = aJoinEnrollDTOFixture().build();
+		given(enrollFacade.joinBuying(any(Long.class), any(JoinEnrollDTO.class)))
+			.willThrow(new CustomException(ErrorCode.LOCK_ACQUISITION_FAILED));
+
+		mockMvc.perform(post("/enrolls")
+				.content(objectMapper.writeValueAsString(joinEnrollDTO))
+				.contentType(MediaType.APPLICATION_JSON)
+				.session(mockSession))
+			.andExpect(status().isServiceUnavailable())
+			.andExpect(jsonPath("$.message").value(ErrorCode.LOCK_ACQUISITION_FAILED.getMessage()))
+			.andDo(log());
 	}
 
 	@Test

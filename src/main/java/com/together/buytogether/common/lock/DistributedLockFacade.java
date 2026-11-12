@@ -7,6 +7,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
+import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -17,7 +20,7 @@ public class DistributedLockFacade {
 	public <T> T executeWithLock(String lockName, long waitMilliSecond, Supplier<T> action) {
 		RLock lock = redissonClient.getLock(lockName);
 		if (!tryLock(lock, waitMilliSecond)) {
-			throw new IllegalStateException("락 획득 실패" + lockName);
+			throw new CustomException(ErrorCode.LOCK_ACQUISITION_FAILED);
 		}
 		try {
 			return action.get();

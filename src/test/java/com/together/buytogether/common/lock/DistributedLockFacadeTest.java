@@ -23,9 +23,9 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 
 import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 
 @SpringBootTest
 class DistributedLockFacadeTest {
@@ -59,8 +59,7 @@ class DistributedLockFacadeTest {
 			// 같은 요청을 다시 보내면 성공할 수 있는 서버 쪽 사정이므로 503으로 응답해야 한다
 			assertThatThrownBy(() -> distributedLockFacade.executeWithLock(lockName, 100, () -> "never"))
 				.isInstanceOfSatisfying(CustomException.class, e ->
-					assertThat(e.getErrorCode().getHttpStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE))
-				.hasMessageStartingWith("락 획득 실패");
+					assertThat(e.getErrorCode()).isEqualTo(ErrorCode.LOCK_ACQUISITION_FAILED));
 
 			releaseHolder.countDown();
 			holder.get(5, TimeUnit.SECONDS);
