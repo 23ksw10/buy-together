@@ -30,7 +30,10 @@ public enum ErrorCode {
 	PRODUCT_QUANTITY_EXCEEDED(CONFLICT, "구매 한도가 초과 되었습니다"),
 	ENROLL_ALREADY_DONE(CONFLICT, "이미 구매에 참여했습니다"),
 	INVALID_QUANTITY(CONFLICT, "구매량은 음수가 될 수 없습니다"),
-	ENROLL_MEMBER_NOT_BE_NEGATIVE(CONFLICT, "구매에 참여한 멤버는 음수가 될 수 없습니다");
+	ENROLL_MEMBER_NOT_BE_NEGATIVE(CONFLICT, "구매에 참여한 멤버는 음수가 될 수 없습니다"),
+
+	/* 503 SERVICE_UNAVAILABLE : 일시적으로 요청을 처리할 수 없는 경우 */
+	LOCK_ACQUISITION_FAILED(SERVICE_UNAVAILABLE, "요청이 몰려 처리하지 못했습니다. 잠시 후 다시 시도해 주세요");
 
 	private final HttpStatus httpStatus;
 	private final String message;

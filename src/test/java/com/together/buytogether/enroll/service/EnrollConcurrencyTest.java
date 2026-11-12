@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +22,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.together.buytogether.common.error.CustomException;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.enroll.domain.Enroll;
 import com.together.buytogether.enroll.domain.EnrollRepository;
-import com.together.buytogether.enroll.dto.request.CancelEnrollDTO;
 import com.together.buytogether.member.domain.Member;
 import com.together.buytogether.member.domain.MemberRepository;
 import com.together.buytogether.product.domain.Product;
@@ -47,6 +48,8 @@ public class EnrollConcurrencyTest {
 	CommonMemberService commonMemberService;
 	@Autowired
 	EnrollFacade enrollFacade;
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
 	private final Queue<Long> createdMemberIds = new ConcurrentLinkedQueue<>();
 	private final Queue<Long> createdProductIds = new ConcurrentLinkedQueue<>();
@@ -118,8 +121,7 @@ public class EnrollConcurrencyTest {
 				try {
 					Enroll savedEnroll = enrollRepository.save(new Enroll(savedMember, product, 1L));
 					createdEnrollIds.add(savedEnroll.getEnrollId());
-					enrollFacade.cancelBuying(savedMember.getMemberId(), new CancelEnrollDTO(product.getProductId()),
-						savedEnroll.getEnrollId());
+					enrollFacade.cancelBuying(savedMember.getMemberId(), savedEnroll.getEnrollId());
 				} catch (CustomException e) {
 					e.printStackTrace();
 				} finally {
@@ -133,6 +135,65 @@ public class EnrollConcurrencyTest {
 
 		Product updatedProduct = productRepository.getByProductId(product.getProductId());
 		assertEquals(0L, updatedProduct.getSoldQuantity());
+	}
+
+	@Test
+	@DisplayName("참여와 취소가 동시에 일어나도 판매 수량은 참여 수량의 합과 같다")
+	void joinAndCancelConcurrencyKeepsSoldQuantityConsistent() throws InterruptedException {
+		int pairCount = 30;
+		ExecutorService executorService = Executors.newFixedThreadPool(pairCount * 2);
+		CountDownLatch startLatch = new CountDownLatch(1);
+		CountDownLatch doneLatch = new CountDownLatch(pairCount * 2);
+		AtomicInteger joinSuccessCount = new AtomicInteger();
+		AtomicInteger cancelSuccessCount = new AtomicInteger();
+
+		Member seller = saveMember("mixed-seller", 0);
+		Product product = saveProduct(aProduct().member(seller)
+			.soldQuantity((long)pairCount)
+			.maxQuantity(1000L)
+			.build());
+		Long productId = product.getProductId();
+		List<Member> cancelers = saveMembers("mixed-canceler", pairCount);
+		List<Member> joiners = saveMembers("mixed-joiner", pairCount);
+
+		for (int i = 0; i < pairCount; i++) {
+			Member joiner = joiners.get(i);
+			Member canceler = cancelers.get(i);
+			Long enrollId = enrollRepository.save(new Enroll(canceler, product, 1L)).getEnrollId();
+			createdEnrollIds.add(enrollId);
+			submitAfterStart(executorService, startLatch, doneLatch, joinSuccessCount, () ->
+				enrollFacade.joinBuying(joiner.getMemberId(),
+					aJoinEnrollDTOFixture().productId(productId).quantity(1L).build()));
+			submitAfterStart(executorService, startLatch, doneLatch, cancelSuccessCount, () ->
+				enrollFacade.cancelBuying(canceler.getMemberId(), enrollId));
+		}
+		startLatch.countDown();
+		doneLatch.await();
+		executorService.shutdown();
+		trackEnrollsByMembersAndProduct(joiners, productId);
+
+		Long enrolledQuantity = jdbcTemplate.queryForObject(
+			"SELECT COALESCE(SUM(quantity), 0) FROM enroll WHERE product_id = ?", Long.class, productId);
+		Product savedProduct = productRepository.getByProductId(productId);
+		// 요청이 하나도 실행되지 않아도 불변식은 성립하므로, 참여와 취소가 실제로 경합했는지도 확인한다
+		assertTrue(joinSuccessCount.get() > 0);
+		assertTrue(cancelSuccessCount.get() > 0);
+		assertEquals(enrolledQuantity, savedProduct.getSoldQuantity());
+	}
+
+	// 개별 요청의 성공/실패와 무관하게 불변식만 검증하므로 예외는 무시하고 성공 횟수만 센다
+	private void submitAfterStart(ExecutorService executorService, CountDownLatch startLatch,
+		CountDownLatch doneLatch, AtomicInteger successCount, Runnable task) {
+		executorService.execute(() -> {
+			try {
+				startLatch.await();
+				task.run();
+				successCount.incrementAndGet();
+			} catch (Exception ignored) {
+			} finally {
+				doneLatch.countDown();
+			}
+		});
 	}
 
 	private List<Member> saveMembers(String role, int count) {
