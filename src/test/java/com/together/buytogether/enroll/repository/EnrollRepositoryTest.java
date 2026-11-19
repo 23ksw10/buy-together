@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.together.buytogether.config.JpaAuditingConfig;
 import com.together.buytogether.enroll.domain.Enroll;
@@ -78,5 +79,16 @@ public class EnrollRepositoryTest {
 		assertThat(foundEnroll).isNotNull();
 		assertThat(foundEnroll.getMember()).isEqualTo(savedMember);
 		assertThat(foundEnroll.getProduct()).isEqualTo(product);
+	}
+
+	// 중복 참여 방지를 애플리케이션의 사전 조회와 락에만 맡기지 않고, DB가 마지막에 막아주는지 검증한다
+	@Test
+	@DisplayName("같은 회원이 같은 상품에 다시 참여한 행은 DB가 거부한다")
+	public void rejectDuplicateEnrollOfSameMemberAndProduct() {
+		enrollRepository.saveAndFlush(enroll);
+		Enroll duplicateEnroll = aEnroll().member(savedMember).product(product).build();
+
+		assertThatThrownBy(() -> enrollRepository.saveAndFlush(duplicateEnroll))
+			.isInstanceOf(DataIntegrityViolationException.class);
 	}
 }
