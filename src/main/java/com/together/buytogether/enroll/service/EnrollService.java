@@ -4,6 +4,7 @@ import static com.together.buytogether.common.lock.LockNumberConstants.LOCKED_TX
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,8 +50,7 @@ public class EnrollService {
 		}
 		product.increaseSoldQuantity(joinEnrollDTO.quantity());
 		stockAlertService.checkAndNotifyLowStock(product);
-		Enroll enroll = new Enroll(member, product, joinEnrollDTO.quantity());
-		Enroll savedEnroll = enrollRepository.save(enroll);
+		Enroll savedEnroll = saveUniqueEnroll(new Enroll(member, product, joinEnrollDTO.quantity()));
 		return ResponseDTO.successResult(JoinEnrollResponseDTO.builder()
 			.productId(product.getProductId())
 			.productTitle(product.getTitle())
@@ -82,6 +82,14 @@ public class EnrollService {
 
 	private boolean isAlreadyEnrolled(Long memberId, Long productId) {
 		return enrollRepository.findByMemberIdAndProductId(memberId, productId).isPresent();
+	}
+
+	private Enroll saveUniqueEnroll(Enroll enroll) {
+		try {
+			return enrollRepository.save(enroll);
+		} catch (DataIntegrityViolationException e) {
+			throw new CustomException(ErrorCode.ENROLL_ALREADY_DONE);
+		}
 	}
 
 	private void validateCancellation(Long memberId, Enroll enroll) {
