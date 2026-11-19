@@ -21,6 +21,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "enroll", indexes = {
 	@Index(name = "idx_enroll_product_id", columnList = "product_id"),
 	@Index(name = "idx_enroll_product_id_created_at", columnList = "product_id, created_at")
-})
+}, uniqueConstraints = @UniqueConstraint(
+	name = "uk_enroll_member_id_product_id", columnNames = {"member_id", "product_id"}))
 @NoArgsConstructor
 @Comment("구매 참여")
 @EntityListeners(AuditingEntityListener.class)
