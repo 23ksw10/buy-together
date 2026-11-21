@@ -17,8 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.together.buytogether.common.error.CustomException;
+import com.together.buytogether.common.error.ErrorCode;
 import com.together.buytogether.common.service.CommonMemberService;
 import com.together.buytogether.common.service.CommonProductService;
 import com.together.buytogether.enroll.domain.Enroll;
@@ -93,6 +95,22 @@ public class EnrollServiceTest {
 		assertThrows(CustomException.class, () -> enrollService.joinBuying(memberId, joinEnrollDTO));
 
 		then(enrollRepository).should(never()).save(any(Enroll.class));
+	}
+
+	// 사전 조회와 저장 사이에 같은 회원의 다른 요청이 먼저 저장된 경우를 저장 시점의 제약 위반으로 재현한다
+	@Test
+	@DisplayName("사전 조회를 통과했더라도 DB 유니크 제약에 걸리면 이미 참여한 것으로 응답한다")
+	void duplicateEnrollRejectedByDatabaseJoinBuyingFail() {
+		given(commonMemberService.getMember(memberId)).willReturn(member);
+		given(commonProductService.getProduct(productId)).willReturn(product);
+		given(enrollRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(Optional.empty());
+		given(enrollRepository.save(any(Enroll.class))).willThrow(DataIntegrityViolationException.class);
+		JoinEnrollDTO joinEnrollDTO = aJoinEnrollDTOFixture().build();
+
+		CustomException exception = assertThrows(CustomException.class,
+			() -> enrollService.joinBuying(memberId, joinEnrollDTO));
+
+		assertEquals(ErrorCode.ENROLL_ALREADY_DONE, exception.getErrorCode());
 	}
 
 	@Test
